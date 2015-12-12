@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>kots</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
+	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
+	<script src="jq_1_11_1.js"></script>
+	<script type="text/javascript">
+		var myGrid;
+		var myGrid2;
+
+		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
+					{p:1, t:"자바", w:"mon1, mon2"},
+		             {p:2, t:"자료구조", w:"mon1, mon2"},
+		             {p:3, t:"네트워크", w:"mon1, mon2"},
+		             {p:4, t:"컴파일러", w:"mon1, mon2"},
+		             {p:5, t:"씨언어", w:"mon1, mon2"}];
+
+
+		function doOnLoad()
+		{
+			myGrid = new dhtmlXGridObject("gridbox");
+			initGrid(myGrid);
+			//myGrid.load("../common/grid.xml");
+			for(var i=1; i<6; i++) {
+				myGrid.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+			}
+
+			myGrid2 = new dhtmlXGridObject("gridbox2");
+			initGrid(myGrid2);
+
+			myGrid.attachEvent("onRowSelect", function(id,ind){
+				console.log("cc");
+			});
+			myGrid.attachEvent("onRowDblClicked", function(id,ind){
+				console.log(myGrid.cells(id,0).getValue());
+				var i = id;
+				myGrid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+			});
+
+
+			setSizes();
+			myGrid.setSizes();
+			myGrid2.setSizes();
+
+			//var canvas = $("canvas1");
+			var canvas = document.getElementById("canvas1");
+			console.log(canvas);
+			var ctx = canvas.getContext("2d");
+			ctx.beginPath();
+
+			const WIDTH = 88;
+			const WIDTH_AX = 40;
+			const HEIGHT = 30;
+			const HEIGHT_AX = 40;
+			const MGN = 2;
+
+			ctx.rect(MGN, MGN, ctx.width-MGN*2, ctx.height-MGN*2);
+
+			var timeName = ["01A","01B","02A","02B","03A","03B","04A","04B","05A","05B","06A","06B","07A","07B","08A","08B","09A","09B"];
+			ctx.rect(MGN, MGN, WIDTH_AX, HEIGHT_AX);
+			for(var i=0; i<18; i++) {
+				var xs = MGN;
+				var ys = MGN+i*HEIGHT+HEIGHT_AX;
+				ctx.rect(xs, ys, WIDTH_AX, HEIGHT);
+				ctx.font="13px dotum";
+				ctx.fillText(timeName[i],xs+10,ys+15);
+			}
+
+			var weekName = ["월", "화", "수", "목", "금"];
+			ctx.lineWidth=0.7;
+			for(var j=0; j<5; j++) {
+				ctx.rect(MGN+j*WIDTH+WIDTH_AX, MGN, WIDTH, HEIGHT_AX);
+				ctx.font="13px dotum";
+				ctx.fillText(weekName[j],MGN+j*WIDTH+WIDTH_AX+20,MGN+25);
+				for(var i=0; i<18; i++) {
+					var xs = MGN+j*WIDTH+WIDTH_AX;
+					var ys = MGN+i*HEIGHT+HEIGHT_AX;
+					ctx.rect(xs, ys, WIDTH, HEIGHT);
+				}
+			}
+
+			ctx.fillStyle="#9CC99C";
+			ctx.fillRect(130, 222, WIDTH, HEIGHT);
+
+			ctx.stroke();
+
+		}
+
+
+		window.onresize = function()
+		{
+			setSizes();
+		}
+
+		function initGrid(grid)
+		{
+			grid.setImagePath("../../../skins/web/imgs/dhxgrid_web/");
+			grid.setHeader("subj,ind, mark");
+			grid.setInitWidths("100,150,200");
+			grid.setColAlign("left,left,left");
+			grid.setColTypes("txt,txt,txt");
+			grid.setColSorting("str,str,str");
+			grid.setEditable(false);
+			dhtmlxEvent(window, "resize", function () {grid.setSizes();});
+			grid.init();
+		}
+
+		function setSizes()
+		{
+			var docuWidth = $(document).width();
+			$(wrapper).width(docuWidth-504);
+		}
+
+
+
+
+	</script>
+</head>
+<body onload="doOnLoad()">
+	<h1>test</h1>
+
+	<div id="wrapper" style="float:left;width:auto;height:500px;">
+	<div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+	<br />
+	<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
+	</div>
+
+	<canvas id="canvas1" width=484, height=600, style="float:right;border:1px solid #000000"></canvas>
+	<script type="text/javascript">
+
+	</script>
+	<br />
+	<br />
+
+	<br />
+
+	<br />
+</body>
+</html>
