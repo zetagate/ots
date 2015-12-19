@@ -16,8 +16,8 @@
 		const MGN = 2;
 
 
-		var myGrid;
-		var myGrid2;
+		var grid1;
+		var grid2;
 
 		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
 			     {p:1, t:"자바", w:"mon1, mon2"},
@@ -29,23 +29,23 @@
 
 		function doOnLoad()
 		{
-			myGrid = new dhtmlXGridObject("gridbox");
-			initGrid(myGrid);
-			//myGrid.load("../common/grid.xml");
+			grid1 = new dhtmlXGridObject("gridbox");
+			initGrid(grid1);
+			//grid1.load("../common/grid.xml");
 			for(var i=1; i<6; i++) {
-				myGrid.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+				grid1.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 			}
 
-			myGrid2 = new dhtmlXGridObject("gridbox2");
-			initGrid(myGrid2);
+			grid2 = new dhtmlXGridObject("gridbox2");
+			initGrid(grid2);
 
-			myGrid.attachEvent("onRowSelect", doOnRowSelect);
-			myGrid.attachEvent("onRowDblClicked", doOnRowDblClicked);
+			grid1.attachEvent("onRowSelect", doOnRowSelect);
+			grid1.attachEvent("onRowDblClicked", doOnRowDblClicked);
 
 
 			setSizes();
-			myGrid.setSizes();
-			myGrid2.setSizes();
+			grid1.setSizes();
+			grid2.setSizes();
 
 			initCanvas();
 		}
@@ -57,9 +57,9 @@
 
 		function doOnRowDblClicked(id, ind)
 		{
-			console.log(myGrid.cells(id,0).getValue());
+			console.log(grid1.cells(id,0).getValue());
 			var i = id;
-			myGrid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+			grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
 
 		window.onresize = function()
