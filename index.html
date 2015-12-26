@@ -7,6 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
+	<script src="20000.js"></script>
 	<script type="text/javascript">
 
 		const WIDTH = 88;
@@ -15,10 +16,21 @@
 		const HEIGHT_AX = 40; //axis
 		const MGN = 2;
 
+		/*var reader = new FileReader();
+		reader.onload = function() {
+			console.log("res = " + reader.result);
+		}
+		reader.onerror = function(evt) {
+			console.log(evt.target.error.code);
+		}
+		reader.readAsText(file, "UTF-8");*/
+
+
+		var oParser = new DOMParser();
+		var oDOM = oParser.parseFromString(data, "text/xml");
 
 		var grid1;
 		var grid2;
-
 		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
 			     {p:1, t:"자바", w:"mon1, mon2"},
 		             {p:2, t:"자료구조", w:"mon1, mon2"},
@@ -29,6 +41,7 @@
 
 		function doOnLoad()
 		{
+
 			grid1 = new dhtmlXGridObject("gridbox");
 			initGrid(grid1);
 			//grid1.load("../common/grid.xml");
@@ -132,6 +145,7 @@
 	</script>
 </head>
 <body onload="doOnLoad()">
+	<input type = "file" id="file"/>
 	<h1>test</h1>
 
 	<div id="wrapper" style="float:left;width:auto;height:500px;">
