@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>dbgen</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script src="jq_1_11_1.js"></script>
+	<script type="text/javascript">
+
+		function doOnLoad()
+		{
+
+
+		}
+		function download(filename, text) {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			element.setAttribute('download', filename);
+
+			element.style.display = 'none';
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function doOpenFile(e)
+		{
+			console.log(e);
+			var file = e.target.files[0];
+			var reader = new FileReader();
+			reader.onload = function() {
+				console.log("res = " + reader.result);
+			}
+			reader.onerror = function(evt) {
+				console.log(evt.target.error.code);
+			}
+			reader.readAsText(file, "UTF-8");
+		}
+
+
+
+	</script>
+</head>
+<body onload="doOnLoad()">
+	<input type = "file" id="file"  onchange="doOpenFile(e)"/>
+</body>
+</html>
