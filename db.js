@@ -1,4 +1,4 @@
-var data ="<root>\
+var SUBJECT_XMLDATA ="<root>\
 	<sbj>\
 		<cod>BSM550</cod>\
 		<ttk>프로그래밍언어</ttk>\
