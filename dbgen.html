@@ -8,8 +8,7 @@
 
 		function doOnLoad()
 		{
-
-
+			$("#fileInput").change(doOpenFile);
 		}
 		function download(filename, text) {
 			var element = document.createElement('a');
@@ -24,25 +23,22 @@
 			document.body.removeChild(element);
 		}
 
-		function doOpenFile(e)
-		{
-			console.log(e);
-			var file = e.target.files[0];
+		function doOpenFile() {
 			var reader = new FileReader();
-			reader.onload = function() {
-				console.log("res = " + reader.result);
+			reader.onload = function(e) {
+				var data = reader.result.replace(/\r\n/gi, "\\\r\n");
+				download("db.txt",data);
+				//console.log("res = " + reader.result);
 			}
 			reader.onerror = function(evt) {
 				console.log(evt.target.error.code);
 			}
-			reader.readAsText(file, "UTF-8");
+			reader.readAsText(this.files[0]);
 		}
-
-
 
 	</script>
 </head>
 <body onload="doOnLoad()">
-	<input type = "file" id="file"  onchange="doOpenFile(e)"/>
+	<input type = "file" id="fileInput"/>
 </body>
 </html>

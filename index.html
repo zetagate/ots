@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
-	<script src="20000.js"></script>
+	<script src="db.js"></script>
 	<script type="text/javascript">
 
 		const WIDTH = 88;
@@ -28,6 +28,7 @@
 
 		var oParser = new DOMParser();
 		var oDOM = oParser.parseFromString(data, "text/xml");
+		console.log(oDOM);
 
 		var grid1;
 		var grid2;
