@@ -4,7 +4,7 @@
     <cod/> <!--subject code-->
     <ttk/> <!--title korean-->
     <tty/> <!--title english-->
-    <crd/> <!--credits-->
+    <crd/> <!--credit point-->
     <cls/> <!--class no-->
     <cap/> <!--capacity-->
     <tar/> <!--target-->

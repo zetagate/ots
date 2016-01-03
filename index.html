@@ -26,18 +26,37 @@
 		reader.readAsText(file, "UTF-8");*/
 
 
-		var oParser = new DOMParser();
-		var oDOM = oParser.parseFromString(data, "text/xml");
-		console.log(oDOM);
+		//var oParser = new DOMParser();
+		//var oDOM = oParser.parseFromString(SUBJECT_XMLDATA, "text/xml");
+		//var arrData = oDOM.documentElement.children;
+		var xmlDoc = $.parseXML(SUBJECT_XMLDATA);
+		var xmlData = xmlDoc.documentElement.children;
+
+		var db = new Array();
+		for(var i=0; i<xmlData.length; i++) {
+			var subject = xmlData[i];
+			var obj = {};
+			for (var j=0; j<subject.children.length; j++) {
+				obj[subject.children[j].tagName] = subject.children[j].innerHTML;
+			}
+			db[i] = obj;
+		}
+
+		xmlDoc = null;
+		xmlData = null;
+		subject = null;
+
 
 		var grid1;
 		var grid2;
+		/*
 		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
 			     {p:1, t:"자바", w:"mon1, mon2"},
 		             {p:2, t:"자료구조", w:"mon1, mon2"},
 		             {p:3, t:"네트워크", w:"mon1, mon2"},
 		             {p:4, t:"컴파일러", w:"mon1, mon2"},
 		             {p:5, t:"씨언어", w:"mon1, mon2"}];
+								 */
 
 
 		function doOnLoad()
@@ -46,8 +65,12 @@
 			grid1 = new dhtmlXGridObject("gridbox");
 			initGrid(grid1);
 			//grid1.load("../common/grid.xml");
-			for(var i=1; i<6; i++) {
-				grid1.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+			for(var i=0; i<db.length; i++) {
+				var note = "";
+				if(db[i].eng == "Y") note += "영";
+				if(db[i].elr == "Y") note += "E";
+				grid1.addRow(i,[db[i].cod, db[i].ttk, db[i].cls, db[i].prf, db[i].tar
+												,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
 			}
 
 			grid2 = new dhtmlXGridObject("gridbox2");
@@ -71,9 +94,9 @@
 
 		function doOnRowDblClicked(id, ind)
 		{
-			console.log(grid1.cells(id,0).getValue());
-			var i = id;
-			grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+			//console.log(grid1.cells(id,0).getValue());
+		//	var i = id;
+			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
 
 		window.onresize = function()
@@ -83,12 +106,12 @@
 
 		function initGrid(grid)
 		{
-			grid.setImagePath("../../../skins/web/imgs/dhxgrid_web/");
-			grid.setHeader("subj,ind, mark");
-			grid.setInitWidths("100,150,200");
-			grid.setColAlign("left,left,left");
-			grid.setColTypes("txt,txt,txt");
-			grid.setColSorting("str,str,str");
+			grid.setImagePath("dhtmlx/skins/web/imgs/dhxgrid_web/");
+			grid.setHeader("코드,과목명,분반,교수,대상,학점,설계,비고,정원,개설학부");
+			grid.setInitWidths("55,130,40,60,70,40,40,40,40,100");
+			grid.setColAlign("left,left,left,left,left,left,left,left,left");
+			grid.setColTypes("txt,txt,txt,txt,txt,txt,txt,txt,txt,txt");
+			grid.setColSorting("str,str,str,str,str,str,str,str,str,str");
 			grid.setEditable(false);
 			dhtmlxEvent(window, "resize", function () {grid.setSizes();});
 			grid.init();
@@ -97,7 +120,7 @@
 		function setSizes()
 		{
 			var docuWidth = $(document).width();
-			$(wrapper).width(docuWidth-504);
+			$(wrapper).width(docuWidth-504+480);
 		}
 
 		function initCanvas()
@@ -149,8 +172,8 @@
 	<input type = "file" id="file"/>
 	<h1>test</h1>
 
-	<div id="wrapper" style="float:left;width:auto;height:500px;">
-	<div id="gridbox" style="width:100%;height:270px;background-color:white;"></div>
+	<div id="wrapper" style="float:left;width:auto;height:600px;">
+	<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
 	<br />
 	<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
 	</div>
