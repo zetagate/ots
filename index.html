@@ -25,7 +25,8 @@
 		}
 		reader.readAsText(file, "UTF-8");*/
 
-
+		var DAY_TIME = {"월":0, "화":100, "수":200, "목":300, "금":400};
+		var AB_TIME = {"A":0, "B":1};
 		//var oParser = new DOMParser();
 		//var oDOM = oParser.parseFromString(SUBJECT_XMLDATA, "text/xml");
 		//var arrData = oDOM.documentElement.children;
@@ -36,8 +37,20 @@
 		for(var i=0; i<xmlData.length; i++) {
 			var subject = xmlData[i];
 			var obj = {};
-			for (var j=0; j<subject.children.length; j++) {
+			for(var j=0; j<subject.children.length; j++) {
 				obj[subject.children[j].tagName] = subject.children[j].innerHTML;
+			}
+			obj.tm = new Array();
+			for(var j=0; j<16; j++) {
+				var str = obj["tm"+(j+1)];
+				delete obj["tm"+(j+1)];
+				if(str.length<5) continue;
+				var tm = 0;
+				tm += DAY_TIME[str.charAt(0)];
+				tm += 2*(parseInt(str.substr(2,2)-1));
+				tm += AB_TIME[str.charAt(4)];
+				obj.tm[j] = tm;
+
 			}
 			db[i] = obj;
 		}
@@ -46,7 +59,8 @@
 		xmlData = null;
 		subject = null;
 
-
+		var canvas;
+		var ctx;
 		var grid1;
 		var grid2;
 		/*
@@ -59,18 +73,40 @@
 								 */
 
 
+		function addRow(grid, i)
+		{
+			var note = "";
+			if(db[i].eng == "Y") note += "영";
+			if(db[i].elr == "Y") note += "E";
+			grid.addRow(i+1,[db[i].cod, db[i].ttk, db[i].cls, db[i].prf, db[i].tar
+											,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
+		}
+
+		function mergeNum(arr)
+		{
+			if(arr.length == 0) return [];
+			var result = [[arr[0],1]];
+			var prev = arr[0];
+			for(var i=1; i<arr.length; i++) {
+				if(arr[i]-prev == 1)
+				++result[result.length-1][1];
+				else
+				result.push([arr[i], 1]);
+				prev = arr[i];
+			}
+			return result;
+		}
+
 		function doOnLoad()
 		{
+			canvas = $("#canvas1")[0];
+			ctx = canvas.getContext("2d");
 
 			grid1 = new dhtmlXGridObject("gridbox");
 			initGrid(grid1);
 			//grid1.load("../common/grid.xml");
 			for(var i=0; i<db.length; i++) {
-				var note = "";
-				if(db[i].eng == "Y") note += "영";
-				if(db[i].elr == "Y") note += "E";
-				grid1.addRow(i,[db[i].cod, db[i].ttk, db[i].cls, db[i].prf, db[i].tar
-												,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
+				addRow(grid1, i);
 			}
 
 			grid2 = new dhtmlXGridObject("gridbox2");
@@ -84,17 +120,28 @@
 			grid1.setSizes();
 			grid2.setSizes();
 
-			initCanvas();
+			drawFrame();
 		}
 
 		function doOnRowSelect(id, ind)
 		{
-			console.log("cc");
+			var tgt = db[id-1].tm[0];
+			var xs = MGN + WIDTH_AX + Math.floor(tgt/100)*WIDTH;
+			var ys = MGN + HEIGHT_AX + (tgt%100)*HEIGHT;
+			ctx.clearRect(0,0, canvas.width, canvas.height);
+			drawFrame();
+
+			ctx.beginPath();
+			ctx.lineWidth = 3;
+			ctx.strokeStyle="#FF0000";
+			ctx.rect(xs, ys, WIDTH, HEIGHT);
+			ctx.stroke();
 		}
 
 		function doOnRowDblClicked(id, ind)
 		{
 			//console.log(grid1.cells(id,0).getValue());
+			addRow(grid2, id);
 		//	var i = id;
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
@@ -120,19 +167,19 @@
 		function setSizes()
 		{
 			var docuWidth = $(document).width();
-			$(wrapper).width(docuWidth-504+480);
+			$(wrapper).width(docuWidth-504);
 		}
 
-		function initCanvas()
+		function drawFrame()
 		{
 			var timeName = ["01A","01B","02A","02B","03A","03B","04A","04B","05A","05B","06A","06B","07A","07B","08A","08B","09A","09B"];
 			var weekName = ["월", "화", "수", "목", "금"];
 
-			var canvas = $("#canvas1")[0];
-			var ctx = canvas.getContext("2d");
-
 			ctx.beginPath();
 
+			ctx.lineWidth = 1;
+			ctx.strokeStyle="#000000";
+			ctx.fillStyle="#000000";
 			ctx.rect(MGN, MGN, ctx.width-MGN*2, ctx.height-MGN*2);
 
 			ctx.rect(MGN, MGN, WIDTH_AX, HEIGHT_AX);
