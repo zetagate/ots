@@ -25,7 +25,8 @@
 		}
 		reader.readAsText(file, "UTF-8");*/
 
-
+		var DAY_TIME = {"월":100, "화":200, "수":300, "목":400, "금":500};
+		var AB_TIME = {"A":0, "B":1};
 		//var oParser = new DOMParser();
 		//var oDOM = oParser.parseFromString(SUBJECT_XMLDATA, "text/xml");
 		//var arrData = oDOM.documentElement.children;
@@ -36,8 +37,20 @@
 		for(var i=0; i<xmlData.length; i++) {
 			var subject = xmlData[i];
 			var obj = {};
-			for (var j=0; j<subject.children.length; j++) {
+			for(var j=0; j<subject.children.length; j++) {
 				obj[subject.children[j].tagName] = subject.children[j].innerHTML;
+			}
+			obj.tm = new Array();
+			for(var j=0; j<16; j++) {
+				var str = obj["tm"+(j+1)];
+				delete obj["tm"+(j+1)];
+				if(str.length<5) continue;
+				var tm = 0;
+				tm += DAY_TIME[str.charAt(0)];
+				tm += 2*parseInt(str.substr(2,2));
+				tm += AB_TIME[str.charAt(4)];
+				obj.tm[j] = tm;
+
 			}
 			db[i] = obj;
 		}
@@ -59,18 +72,22 @@
 								 */
 
 
+		function addRow(grid, i)
+		{
+			var note = "";
+			if(db[i].eng == "Y") note += "영";
+			if(db[i].elr == "Y") note += "E";
+			grid.addRow(i,[db[i].cod, db[i].ttk, db[i].cls, db[i].prf, db[i].tar
+											,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
+		}
+
 		function doOnLoad()
 		{
-
 			grid1 = new dhtmlXGridObject("gridbox");
 			initGrid(grid1);
 			//grid1.load("../common/grid.xml");
 			for(var i=0; i<db.length; i++) {
-				var note = "";
-				if(db[i].eng == "Y") note += "영";
-				if(db[i].elr == "Y") note += "E";
-				grid1.addRow(i,[db[i].cod, db[i].ttk, db[i].cls, db[i].prf, db[i].tar
-												,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
+				addRow(grid1, i);
 			}
 
 			grid2 = new dhtmlXGridObject("gridbox2");
@@ -89,12 +106,13 @@
 
 		function doOnRowSelect(id, ind)
 		{
-			console.log("cc");
+			console.log(eval("db[id].tm"+1));
 		}
 
 		function doOnRowDblClicked(id, ind)
 		{
 			//console.log(grid1.cells(id,0).getValue());
+			addRow(grid2, id);
 		//	var i = id;
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
