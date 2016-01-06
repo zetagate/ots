@@ -25,7 +25,7 @@
 		}
 		reader.readAsText(file, "UTF-8");*/
 
-		var DAY_TIME = {"월":0, "화":100, "수":200, "목":300, "금":400};
+		var DAY_TIME = {"월":0, "화":100, "수":200, "목":300, "금":400, "토":500};
 		var AB_TIME = {"A":0, "B":1};
 		//var oParser = new DOMParser();
 		//var oDOM = oParser.parseFromString(SUBJECT_XMLDATA, "text/xml");
@@ -97,6 +97,17 @@
 			return result;
 		}
 
+		function filterList()
+		{
+			grid1.clearAll();
+			for(var i=0; i<db.length; i++) {
+				if(db[i].ttk.search($("#filter")[0].value) != -1
+			     || db[i].prf.search($("#filter")[0].value) != -1
+			     || db[i].cod.search($("#filter")[0].value) != -1)
+					addRow(grid1, i);
+			}
+		}
+
 		function doOnLoad()
 		{
 			canvas = $("#canvas1")[0];
@@ -115,6 +126,7 @@
 			grid1.attachEvent("onRowSelect", doOnRowSelect);
 			grid1.attachEvent("onRowDblClicked", doOnRowDblClicked);
 
+			$("#filter").on("input", filterList);
 
 			setSizes();
 			grid1.setSizes();
@@ -125,16 +137,60 @@
 
 		function doOnRowSelect(id, ind)
 		{
-			var tgt = db[id-1].tm[0];
-			var xs = MGN + WIDTH_AX + Math.floor(tgt/100)*WIDTH;
-			var ys = MGN + HEIGHT_AX + (tgt%100)*HEIGHT;
+			//id is index+1
+			//should use id-1
+			var i;
+
 			ctx.clearRect(0,0, canvas.width, canvas.height);
 			drawFrame();
+			drawCartList();
+			drawSelection(mergeNum(db[id-1].tm), 5);
+
+			i = id-2;
+			while(i>=0) {
+				if(db[i].cod == db[id-1].cod) {
+					console.log(i);
+					drawSelection(mergeNum(db[i].tm),2);
+				}
+				else break;
+				--i;
+			}
+			i = id;
+			while(i<db.length) {
+				if(db[i].cod == db[id-1].cod) {
+					console.log(i);
+					drawSelection(mergeNum(db[i].tm),2);
+				}
+				else break;
+				++i;
+			}
+
+		}
+
+		function drawSelection(times, lineWidth)
+		{
 
 			ctx.beginPath();
-			ctx.lineWidth = 3;
+			ctx.lineWidth = lineWidth;
 			ctx.strokeStyle="#FF0000";
-			ctx.rect(xs, ys, WIDTH, HEIGHT);
+
+			var xs;
+			var ys;
+
+			if(times.length == 0) return;
+			for(var i=0; i<times.length; i++) {
+				var tgt = times[i][0];
+				if(tgt%100<17) {
+					xs = MGN + WIDTH_AX + Math.floor(tgt/100)*WIDTH;
+					ys = MGN + HEIGHT_AX + (tgt%100)*HEIGHT;
+					ctx.rect(xs, ys, WIDTH, HEIGHT*times[i][1]);
+				}
+				else {
+					xs = MGN + WIDTH_AX + Math.floor(tgt/100)*WIDTH;
+					ys = MGN + HEIGHT_AX + 18*HEIGHT;
+					ctx.rect(xs, ys, WIDTH, HEIGHT*2);
+				}
+			}
 			ctx.stroke();
 		}
 
@@ -167,65 +223,74 @@
 		function setSizes()
 		{
 			var docuWidth = $(document).width();
-			$(wrapper).width(docuWidth-504);
+			$(wrapper).width(docuWidth-(canvas.width+20));
 		}
 
 		function drawFrame()
 		{
 			var timeName = ["01A","01B","02A","02B","03A","03B","04A","04B","05A","05B","06A","06B","07A","07B","08A","08B","09A","09B"];
-			var weekName = ["월", "화", "수", "목", "금"];
-
+			var weekName = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+			var xs;
+			var ys;
 			ctx.beginPath();
 
 			ctx.lineWidth = 1;
 			ctx.strokeStyle="#000000";
 			ctx.fillStyle="#000000";
+			ctx.font="13px dotum";
 			ctx.rect(MGN, MGN, ctx.width-MGN*2, ctx.height-MGN*2);
+
 
 			ctx.rect(MGN, MGN, WIDTH_AX, HEIGHT_AX);
 			for(var i=0; i<18; i++) {
-				var xs = MGN;
-				var ys = MGN+i*HEIGHT+HEIGHT_AX;
+				xs = MGN;
+				ys = MGN+i*HEIGHT+HEIGHT_AX;
 				ctx.rect(xs, ys, WIDTH_AX, HEIGHT);
-				ctx.font="13px dotum";
-				ctx.fillText(timeName[i],xs+10,ys+15);
+				ctx.fillText(timeName[i],xs+8,ys+18);
 			}
+			ctx.rect(xs, ys+HEIGHT, WIDTH_AX, HEIGHT*2);
+			ctx.fillText("이후",xs+7,ys+HEIGHT+30);
 
 			ctx.lineWidth=0.7;
-			for(var j=0; j<5; j++) {
+			for(var j=0; j<weekName.length; j++) {
 				ctx.rect(MGN+j*WIDTH+WIDTH_AX, MGN, WIDTH, HEIGHT_AX);
-				ctx.font="13px dotum";
-				ctx.fillText(weekName[j],MGN+j*WIDTH+WIDTH_AX+20,MGN+25);
+				ctx.fillText(weekName[j],MGN+j*WIDTH+WIDTH_AX+25,MGN+25);
 				for(var i=0; i<18; i++) {
-					var xs = MGN+j*WIDTH+WIDTH_AX;
-					var ys = MGN+i*HEIGHT+HEIGHT_AX;
+					xs = MGN+j*WIDTH+WIDTH_AX;
+					ys = MGN+i*HEIGHT+HEIGHT_AX;
 					ctx.rect(xs, ys, WIDTH, HEIGHT);
 				}
+				ctx.rect(xs, ys+HEIGHT, WIDTH, HEIGHT*2);
 			}
 
-			ctx.fillStyle="#9CC99C";
-			ctx.fillRect(130, 222, WIDTH, HEIGHT);
+
+
+			//ctx.fillStyle="#9CC99C";
+			//ctx.fillRect(130, 222, WIDTH, HEIGHT);
 
 			ctx.stroke();
 
 		}
 
-
+		function drawCartList()
+		{
+		}
 
 
 	</script>
 </head>
 <body onload="doOnLoad()">
-	<input type = "file" id="file"/>
+	<!--<input type = "file" id="file"/>-->
 	<h1>test</h1>
 
 	<div id="wrapper" style="float:left;width:auto;height:600px;">
-	<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
-	<br />
-	<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
+		<input type="text" id="filter" placeholder="ㅗㅗㅗ">
+		<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
+		<br />
+		<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
 	</div>
 
-	<canvas id="canvas1" width=484, height=600, style="float:right;border:1px solid #000000"></canvas>
+	<canvas id="canvas1" width=572, height=645, style="float:right;border:1px solid #000000"></canvas>
 	<script type="text/javascript">
 
 	</script>
