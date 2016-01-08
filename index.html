@@ -10,7 +10,7 @@
 	<script src="db.js"></script>
 	<script type="text/javascript">
 
-		const WIDTH = 88;
+		const WIDTH = 80;
 		const WIDTH_AX = 40; //axis
 		const HEIGHT = 30;
 		const HEIGHT_AX = 40; //axis
@@ -63,6 +63,9 @@
 		var ctx;
 		var grid1;
 		var grid2;
+
+		var immed = false;
+		var empty = false;
 		/*
 		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
 			     {p:1, t:"자바", w:"mon1, mon2"},
@@ -77,7 +80,7 @@
 		{
 			var note = "";
 			if(db[i].eng == "Y") note += "영";
-			if(db[i].elr == "Y") note += "E";
+			if(db[i].elr == "Y") note += "e";
 			grid.addRow(i+1,[db[i].cod, db[i].ttk, db[i].cls, db[i].prf, db[i].tar
 											,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
 		}
@@ -97,18 +100,59 @@
 			return result;
 		}
 
-		function filterList()
+		function filterList(keyword, args)
 		{
 			grid1.clearAll();
 			for(var i=0; i<db.length; i++) {
-				if(db[i].ttk.search($("#filter")[0].value) != -1
-			     || db[i].prf.search($("#filter")[0].value) != -1
-			     || db[i].cod.search($("#filter")[0].value) != -1)
-					addRow(grid1, i);
+				for(var j=0; j<args.length; j++) {
+					if(db[i][args[j]].search(keyword) != -1) {
+						addRow(grid1, i);
+						break;
+					}
+				}
 			}
 		}
 
-		function doOnLoad()
+		function onFilterChange()
+		{
+			filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
+		}
+
+		function onFilterInput()
+		{
+			if(immed) onFilterChange();
+		}
+
+		function onEnterClick()
+		{
+			onFilterChange();
+		}
+
+		function toggleImmed()
+		{
+			immed = !immed;
+			if(immed) filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
+		}
+		function toggleEmpty()
+		{
+		}
+
+		function onDepSelect(e)
+		{
+			filterList(e.target.value, ["dep"]);
+		}
+
+		function onDviSelect(e)
+		{
+			filterList(e.target.value, ["dvi"]);
+		}
+
+		function onInClick()
+		{
+			addRow(grid2, grid1.getSelectedId()-1);
+		}
+
+		function onLoad()
 		{
 			canvas = $("#canvas1")[0];
 			ctx = canvas.getContext("2d");
@@ -123,11 +167,16 @@
 			grid2 = new dhtmlXGridObject("gridbox2");
 			initGrid(grid2);
 
-			grid1.attachEvent("onRowSelect", doOnRowSelect);
-			grid1.attachEvent("onRowDblClicked", doOnRowDblClicked);
+			grid1.attachEvent("onRowSelect", onRowSelect);
+			grid1.attachEvent("onRowDblClicked", onRowDblClicked);
 
-			$("#filter").on("input", filterList);
-
+			$("#filter").on("input", onFilterInput);
+			$("#filter").change(onFilterChange);
+			$("#btnEnter").click(onEnterClick);
+			$("#chkImmed").change(toggleImmed);
+			$("#selDep").change(onDepSelect);
+			$("#selDvi").change(onDviSelect);
+			$("#btnIn").click(onInClick);
 			setSizes();
 			grid1.setSizes();
 			grid2.setSizes();
@@ -135,11 +184,12 @@
 			drawFrame();
 		}
 
-		function doOnRowSelect(id, ind)
+		function onRowSelect(id, ind)
 		{
 			//id is index+1
 			//should use id-1
 			var i;
+			console.log(db[id-1].dvi);
 
 			ctx.clearRect(0,0, canvas.width, canvas.height);
 			drawFrame();
@@ -149,7 +199,6 @@
 			i = id-2;
 			while(i>=0) {
 				if(db[i].cod == db[id-1].cod) {
-					console.log(i);
 					drawSelection(mergeNum(db[i].tm),2);
 				}
 				else break;
@@ -158,7 +207,6 @@
 			i = id;
 			while(i<db.length) {
 				if(db[i].cod == db[id-1].cod) {
-					console.log(i);
 					drawSelection(mergeNum(db[i].tm),2);
 				}
 				else break;
@@ -194,10 +242,10 @@
 			ctx.stroke();
 		}
 
-		function doOnRowDblClicked(id, ind)
+		function onRowDblClicked(id, ind)
 		{
 			//console.log(grid1.cells(id,0).getValue());
-			addRow(grid2, id);
+			addRow(grid2, id-1);
 		//	var i = id;
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
@@ -223,7 +271,24 @@
 		function setSizes()
 		{
 			var docuWidth = $(document).width();
-			$(wrapper).width(docuWidth-(canvas.width+20));
+			$(wrapper).width(docuWidth-(canvas.width+20)+500);
+		}
+
+		function fillTextBox(text, x, y, fieldWidth, lineHeight) {
+			var line = "";
+			for(var i=0; i<text.length; i++) {
+				var tempLine = line + text[i];
+				var tempWidth = ctx.measureText(tempLine).width;
+				if (tempWidth < fieldWidth) {
+					line = tempLine;
+				}
+				else {
+					ctx.fillText(line, x, y);
+					line = text[i];
+					y += lineHeight;
+				}
+			}
+			ctx.fillText(line, x, y);
 		}
 
 		function drawFrame()
@@ -279,18 +344,43 @@
 
 	</script>
 </head>
-<body onload="doOnLoad()">
+<body onload="onLoad()">
 	<!--<input type = "file" id="file"/>-->
 	<h1>test</h1>
 
-	<div id="wrapper" style="float:left;width:auto;height:600px;">
-		<input type="text" id="filter" placeholder="ㅗㅗㅗ">
+	<div id="wrapper" style="float:left;width:auto;">
+		<input type="text" id="filter" size=10 placeholder="검색...">
+		<button type="button" id="btnEnter">Enter</button>
+		<input type="checkbox" id="chkImmed">즉시검색
+		<input type="checkbox" id="chkEmpty">공강찾기
+		<select id="selDep">
+		  <option value="">개설학부</option>
+		  <option value="건축공">건축</option>
+		  <option value="기계공">기계</option>
+			<option value="기전융">기전융합</option>
+			<option value="디자인">디공</option>
+			<option value="메카트">메카</option>
+			<option value="메카I">메카융합</option>
+			<option value="문리H">문리HRD</option>
+			<option value="산업경">산경</option>
+		  <option value="에너지">에신화</option>
+			<option value="통신공">전전통</option>
+			<option value="컴퓨터">컴공</option>
+		</select>
+		<select id="selDvi">
+		  <option value="">전체유형</option>
+		  <option value="HRD">HRD</option>
+		  <option value="MSC">MSC</option>
+		</select>
+
 		<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
-		<br />
+		<button type="button" id="btnOut">△</button>
+		<button type="button" id="btnOutAll">△△</button>
+		<button type="button" id="btnIn">▽</button>
 		<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
 	</div>
 
-	<canvas id="canvas1" width=572, height=645, style="float:right;border:1px solid #000000"></canvas>
+	<canvas id="canvas1" width=524, height=645, style="float:right;border:1px solid #000000"></canvas>
 	<script type="text/javascript">
 
 	</script>
