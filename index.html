@@ -113,12 +113,6 @@
 			}
 		}
 
-		function toggleImmed()
-		{
-			immed = !immed;
-			if(immed) filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
-		}
-
 		function onFilterChange()
 		{
 			filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
@@ -129,6 +123,16 @@
 			if(immed) onFilterChange();
 		}
 
+		function onEnterClick()
+		{
+			onFilterChange();
+		}
+
+		function toggleImmed()
+		{
+			immed = !immed;
+			if(immed) filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
+		}
 		function toggleEmpty()
 		{
 		}
@@ -141,6 +145,11 @@
 		function onDviSelect(e)
 		{
 			filterList(e.target.value, ["dvi"]);
+		}
+
+		function onInClick()
+		{
+			addRow(grid2, grid1.getSelectedId()-1);
 		}
 
 		function onLoad()
@@ -163,9 +172,11 @@
 
 			$("#filter").on("input", onFilterInput);
 			$("#filter").change(onFilterChange);
+			$("#btnEnter").click(onEnterClick);
 			$("#chkImmed").change(toggleImmed);
 			$("#selDep").change(onDepSelect);
 			$("#selDvi").change(onDviSelect);
+			$("#btnIn").click(onInClick);
 			setSizes();
 			grid1.setSizes();
 			grid2.setSizes();
@@ -234,7 +245,7 @@
 		function onRowDblClicked(id, ind)
 		{
 			//console.log(grid1.cells(id,0).getValue());
-			addRow(grid2, id);
+			addRow(grid2, id-1);
 		//	var i = id;
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
@@ -261,6 +272,23 @@
 		{
 			var docuWidth = $(document).width();
 			$(wrapper).width(docuWidth-(canvas.width+20)+500);
+		}
+
+		function fillTextBox(text, x, y, fieldWidth, lineHeight) {
+			var line = "";
+			for(var i=0; i<text.length; i++) {
+				var tempLine = line + text[i];
+				var tempWidth = ctx.measureText(tempLine).width;
+				if (tempWidth < fieldWidth) {
+					line = tempLine;
+				}
+				else {
+					ctx.fillText(line, x, y);
+					line = text[i];
+					y += lineHeight;
+				}
+			}
+			ctx.fillText(line, x, y);
 		}
 
 		function drawFrame()
@@ -320,9 +348,9 @@
 	<!--<input type = "file" id="file"/>-->
 	<h1>test</h1>
 
-	<div id="wrapper" style="float:left;width:auto;height:600px;">
+	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=10 placeholder="검색...">
-		<button type="button">Enter</button>
+		<button type="button" id="btnEnter">Enter</button>
 		<input type="checkbox" id="chkImmed">즉시검색
 		<input type="checkbox" id="chkEmpty">공강찾기
 		<select id="selDep">
@@ -346,7 +374,9 @@
 		</select>
 
 		<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
-		<br />
+		<button type="button" id="btnOut">△</button>
+		<button type="button" id="btnOutAll">△△</button>
+		<button type="button" id="btnIn">▽</button>
 		<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
 	</div>
 

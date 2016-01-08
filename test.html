@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="200" height="400" style="border:1px solid #000000;"></canvas>
+    <script>
+      function fillTextBox(context, text, x, y, fieldWidth, lineHeight) {
+        var line = "";
+        for(var n = 0; n < text.length; n++) {
+          var tempLine = line + text[n];
+          var tempWidth = context.measureText(tempLine).width;
+          if (tempWidth < fieldWidth) {
+            line = tempLine;
+          }
+          else {
+            context.fillText(line, x, y);
+            line = text[n];
+            y += lineHeight;
+          }
+        }
+        context.fillText(line, x, y);
+      }
+
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      var maxWidth = 200;
+      var lineHeight = 20;
+      var x = 0;
+      var y = 40;
+      var text = '가나다라마바사가나다라마바사';
+
+      context.font = '12pt Calibri';
+      context.fillStyle = '#333';
+
+      wrapText(context, text, 20, 120+20, 100, lineHeight);
+      context.strokeRect(20,120,100,200);
+    </script>
+  </body>
+</html>
