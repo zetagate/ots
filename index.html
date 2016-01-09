@@ -63,6 +63,7 @@
 		var ctx;
 		var grid1;
 		var grid2;
+		var cartList = [];
 
 		var immed = false;
 		var empty = false;
@@ -103,6 +104,7 @@
 		function filterList(keyword, args)
 		{
 			grid1.clearAll();
+			/*
 			for(var i=0; i<db.length; i++) {
 				for(var j=0; j<args.length; j++) {
 					if(db[i][args[j]].search(keyword) != -1) {
@@ -110,7 +112,27 @@
 						break;
 					}
 				}
+			}*/
+
+			/* need stabilizing*/
+			var k=0;
+			function softLoader() {
+				if(k*100>=db.length) {
+					clearInterval(interval);
+					return;
+				}
+				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
+					for(var j=0; j<args.length; j++) {
+						if(db[i][args[j]].search(keyword) != -1) {
+							addRow(grid1, i);
+							break;
+						}
+					}
+				}
+				++k;
 			}
+			var interval = setInterval(softLoader, 2);
+
 		}
 
 		function onFilterChange()
@@ -147,9 +169,19 @@
 			filterList(e.target.value, ["dvi"]);
 		}
 
+		function onOutClick()
+		{
+				grid2.deleteSelectedRows();
+		}
+
+		function onOutAllClick()
+		{
+			grid2.clearAll();
+		}
+
 		function onInClick()
 		{
-			addRow(grid2, grid1.getSelectedId()-1);
+			cartTo(grid1.getSelectedId()-1);
 		}
 
 		function onLoad()
@@ -160,9 +192,21 @@
 			grid1 = new dhtmlXGridObject("gridbox");
 			initGrid(grid1);
 			//grid1.load("../common/grid.xml");
-			for(var i=0; i<db.length; i++) {
-				addRow(grid1, i);
+			//for(var i=0; i<db.length; i++) {
+			//	addRow(grid1, i);
+			//}
+			var k=0;
+			function softLoader() {
+				if(k*100>=db.length) {
+					clearInterval(interval);
+					return;
+				}
+				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
+					addRow(grid1, i);
+				}
+				++k;
 			}
+			var interval = setInterval(softLoader, 80);
 
 			grid2 = new dhtmlXGridObject("gridbox2");
 			initGrid(grid2);
@@ -176,7 +220,11 @@
 			$("#chkImmed").change(toggleImmed);
 			$("#selDep").change(onDepSelect);
 			$("#selDvi").change(onDviSelect);
+			$("#btnOut").click(onOutClick);
+			$("#btnOutAll").click(onOutAllClick);
 			$("#btnIn").click(onInClick);
+
+
 			setSizes();
 			grid1.setSizes();
 			grid2.setSizes();
@@ -245,9 +293,19 @@
 		function onRowDblClicked(id, ind)
 		{
 			//console.log(grid1.cells(id,0).getValue());
-			addRow(grid2, id-1);
+			cartTo(id-1);
 		//	var i = id;
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
+		}
+
+		function cartTo(idx)
+		{
+			addRow(grid2, idx);
+			cartList.push(idx);
+
+			ctx.clearRect(0,0, canvas.width, canvas.height);
+			drawFrame();
+			drawCartList();
 		}
 
 		window.onresize = function()
@@ -274,7 +332,7 @@
 			$(wrapper).width(docuWidth-(canvas.width+20)+500);
 		}
 
-		function fillTextBox(text, x, y, fieldWidth, lineHeight) {
+		function drawTextBox(text, x, y, fieldWidth) {
 			var line = "";
 			for(var i=0; i<text.length; i++) {
 				var tempLine = line + text[i];
@@ -285,7 +343,7 @@
 				else {
 					ctx.fillText(line, x, y);
 					line = text[i];
-					y += lineHeight;
+					y += 20;
 				}
 			}
 			ctx.fillText(line, x, y);
@@ -339,6 +397,36 @@
 
 		function drawCartList()
 		{
+			ctx.lineWidth = 2;
+			ctx.strokeStyle="#000000";
+			ctx.fillStyle="#000000";
+			ctx.font="13px dotum";
+
+			for(var i=0; i<cartList.length; i++) {
+				var sbj = db[cartList[i]];
+				var times = mergeNum(sbj.tm);
+				for(var j=0; j<times.length; j++) {
+					var xs;
+					var ys;
+					var tgt = times[j][0];
+					xs = MGN + WIDTH_AX + Math.floor(tgt/100)*WIDTH;
+					if(tgt%100<17) {
+						ys = MGN + HEIGHT_AX + (tgt%100)*HEIGHT;
+						ctx.fillStyle="#9CC99C";
+						ctx.fillRect(xs, ys, WIDTH, HEIGHT*times[i][1]);
+						ctx.fillStyle="#000000";
+						ctx.strokeStyle="#000000";
+						ctx.lineWidth=2;
+						ctx.strokeRect(xs, ys, WIDTH, HEIGHT*times[i][1]);
+						drawTextBox(sbj.ttk,xs,ys+20,WIDTH);
+					}
+					else {
+						ys = MGN + HEIGHT_AX + 18*HEIGHT;
+						//ctx.rect(xs, ys, WIDTH, HEIGHT*2);
+					}
+				}
+				//drawTextBox("aa",20,20,WIDTH);
+			}
 		}
 
 
