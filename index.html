@@ -9,6 +9,7 @@
 	<script src="jq_1_11_1.js"></script>
 	<script src="db.js"></script>
 	<script type="text/javascript">
+		checkBrowser();
 
 		const WIDTH = 80;
 		const WIDTH_AX = 40; //axis
@@ -78,6 +79,14 @@
 		             {p:5, t:"씨언어", w:"mon1, mon2"}];
 								 */
 
+
+		function checkBrowser()
+		{
+			var agent = navigator.userAgent.toLowerCase();
+			if (navigator.userAgent.search("Trident")!=-1 || (agent.search("msie")!=-1)) {
+				alert("본 사이트는 IE8 이하에서는 동작하지 않으며 IE9, IE10, IE11에서는 시간표 저장기능을 지원하지 않으므로 크롬, 파이어폭스, 엣지 등의 브라우저로 접속해 주시기 바랍니다.");
+			}
+		}
 
 		function addRow(grid, i)
 		{
@@ -180,11 +189,13 @@
 		function onDepSelect(e)
 		{
 			filterList(e.target.value, ["dep"]);
+			$("#selDvi")[0].selectedIndex = 0;
 		}
 
 		function onDviSelect(e)
 		{
 			filterList(e.target.value, ["dvi"]);
+			$("#selDep")[0].selectedIndex = 0;
 		}
 
 		function onOutClick()
@@ -210,6 +221,18 @@
 		{
 			cartTo(grid1.getSelectedId()-1);
 			redraw();
+		}
+
+		function onSaveClick()
+		{
+			download("timetable.txt",cartList.toString());
+		}
+
+		function onLoadClick()
+		{
+			//$("#formInput").submit();
+
+			loadData(this.files[0]);
 		}
 
 		function onLoad()
@@ -252,7 +275,14 @@
 			$("#btnOut").click(onOutClick);
 			$("#btnOutAll").click(onOutAllClick);
 			$("#btnIn").click(onInClick);
+			$("#btnSave").click(onSaveClick);
+			$("#btnLoad").click(onLoadClick);
 
+			$("#btnInput").click(function(e) {
+					e.preventDefault();
+			    $("#fileInput").click();
+			})
+			$("#fileInput").change(onLoadClick);
 
 			setSizes();
 			grid1.setSizes();
@@ -305,6 +335,9 @@
 
 		function cartTo(idx)
 		{
+			if(idx<0 || idx>=db.length) {
+				window.alert("유효하지 않은 데이터");
+			}
 			for(var i=0; i<cartList.length; i++) {
 				for(var j=0; j<db[cartList[i]].tm.length; j++) {
 					for(var k=0; k<db[idx].tm.length; k++) {
@@ -340,7 +373,13 @@
 		function setSizes()
 		{
 			var docuWidth = $(document).width();
-			$(wrapper).width(docuWidth-(canvas.width+20));
+			var size = docuWidth-(canvas.width+20);
+			if(size>230) {
+				$(wrapper).width(docuWidth-(canvas.width+30));
+			}
+			else {
+				$(wrapper).width(docuWidth-20);
+			}
 		}
 
 		function redraw()
@@ -361,7 +400,7 @@
 				else {
 					ctx.fillText(line, x, y);
 					line = text[i];
-					y += 20;
+					y += 15;
 				}
 			}
 			ctx.fillText(line, x, y);
@@ -475,7 +514,7 @@
 					ctx.lineWidth=2;
 					ctx.strokeRect(xs, ys, WIDTH, HEIGHT*times[j][1]);
 					var text = sbj.ttk + " " + sbj.cls + " " + sbj.prf;
-					drawTextBox(text,xs,ys+20,WIDTH);
+					drawTextBox(text,xs+2,ys+20,WIDTH-4);
 				}
 				//drawTextBox("aa",20,20,WIDTH);
 			}
@@ -483,18 +522,51 @@
 
 		}
 
+		function download(filename, text) {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			element.setAttribute('download', filename);
+			element.style.display = 'none';
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+		}
+
+		function loadData(file)
+		{
+			var size = file.size;
+			if(size>64) {
+				window.alert("파일이 너무 큽니다.");
+				return;
+			}
+			cartList = [];
+			grid2.clearAll();
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var data = reader.result;
+				var arr = data.split(",");
+				for(var i=0; i<arr.length; i++) {
+					cartTo(parseInt(arr[i]));
+				}
+				redraw();
+			}
+			reader.onerror = function(evt) {
+				console.log(evt.target.error.code);
+			}
+			reader.readAsText(file);
+		}
+
 
 	</script>
 </head>
 <body onload="onLoad()">
 	<!--<input type = "file" id="file"/>-->
-	<h1>test</h1>
+	<h3>2015년 2학기</h3>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=10 placeholder="검색...">
 		<button type="button" id="btnEnter">Enter</button>
-		<input type="checkbox" id="chkImmed">즉시검색</input>
-		<button type="button" id="btnEmpty">공강찾기</button>
+		<input type="checkbox" id="chkImmed">빠른검색</input>
 		<select id="selDep">
 		  <option value="">개설학부</option>
 		  <option value="건축공">건축</option>
@@ -514,24 +586,31 @@
 		  <option value="HRD">HRD</option>
 		  <option value="MSC">MSC</option>
 		</select>
+		<button type="button" id="btnEmpty">※</button>
 
 		<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
-		<button type="button" id="btnOut">△</button>
-		<button type="button" id="btnOutAll">△△</button>
-		<button type="button" id="btnIn">▽</button>
-		<div style="display:inline" id="totalCredits">수강학점 : 0</div>
-		<div id="gridbox2" style="width:100%;height:170px;background-color:white;"></div>
+			<button type="button" id="btnOut">▲</button>
+			<button type="button" id="btnOutAll">초기화</button>
+			<button type="button" id="btnIn">▼</button>
+			<button type="button" id="btnSave">저장</button>
+			<form id="formInput" style="display:inline;">
+				<input type="file" id="fileInput" style="position:absolute; top:-100px;"/>
+				<button id="btnInput">로드</button>
+			</form>
+		<div style="display:inline;font-size:0.8em" id="totalCredits">신청학점 : 0</div>
+		<div id="gridbox2" style="width:100%;height:225px;background-color:white;"></div>
+
+	</div>
+	<br>
+	<br>
+
+	<canvas id="canvas1" width=524, height=645 style="float:left;border:1px solid #000000"></canvas>
+
+	<div style="position:static;width:400px">
+		<br>copyright (c) zetagate 2016
+		<br>Powerd by DHTMLX GPLv2, GitHub, jQuery
+		<br>more informaton about open source license
 	</div>
 
-	<canvas id="canvas1" width=524, height=645, style="float:right;border:1px solid #000000"></canvas>
-	<script type="text/javascript">
-
-	</script>
-	<br />
-	<br />
-
-	<br />
-
-	<br />
 </body>
 </html>
