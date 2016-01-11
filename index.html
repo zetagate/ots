@@ -7,7 +7,7 @@
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
-	<script src="db.js"></script>
+	<script src="db2.txt"></script>
 	<script type="text/javascript">
 		checkBrowser();
 
@@ -30,9 +30,12 @@
 		var AB_TIME = {"A":0, "B":1};
 
 		var COLOR_SET = ["#9AB3FF","#7AE8BD","#E3FF93","#E8C17A","#FF8882"];
+
+		var db = SUBJECT_OBJDATA;
 		//var oParser = new DOMParser();
 		//var oDOM = oParser.parseFromString(SUBJECT_XMLDATA, "text/xml");
 		//var arrData = oDOM.documentElement.children;
+		/*
 		var xmlDoc = $.parseXML(SUBJECT_XMLDATA);
 		var xmlData = xmlDoc.documentElement.children;
 
@@ -57,10 +60,10 @@
 			}
 			db[i] = obj;
 		}
-
 		xmlDoc = null;
 		xmlData = null;
 		subject = null;
+		*/
 
 		var canvas;
 		var ctx;
@@ -230,9 +233,9 @@
 
 		function onLoadClick()
 		{
-			//$("#formInput").submit();
 
 			loadData(this.files[0]);
+			$("#fileInput")[0].value = "";
 		}
 
 		function onLoad()
@@ -566,7 +569,7 @@
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=10 placeholder="검색...">
 		<button type="button" id="btnEnter">Enter</button>
-		<input type="checkbox" id="chkImmed">빠른검색</input>
+		<input type="checkbox" id="chkImmed">빠른검색
 		<select id="selDep">
 		  <option value="">개설학부</option>
 		  <option value="건축공">건축</option>
