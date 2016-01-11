@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>dbgen2</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script src="jq_1_11_1.js"></script>
+	<script type="text/javascript">
+
+
+		var DAY_TIME = {"월":0, "화":100, "수":200, "목":300, "금":400, "토":500};
+		var AB_TIME = {"A":0, "B":1};
+
+
+		function doOnLoad()
+		{
+			$("#fileInput").change(doOpenFile);
+		}
+		function download(filename, text) {
+			var element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			element.setAttribute('download', filename);
+
+			element.style.display = 'none';
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
+		function doOpenFile() {
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var data = reader.result;
+				var output = processData(data);
+				download("db2.txt",output);
+				//console.log("res = " + reader.result);
+			}
+			reader.onerror = function(evt) {
+				console.log(evt.target.error.code);
+			}
+			reader.readAsText(this.files[0]);
+		}
+
+		function processData(data)
+		{
+			var xmlDoc = $.parseXML(data);
+			var xmlData = xmlDoc.documentElement.children;
+
+			/*
+			var SUBJECT_OBJDATA = [
+			{key1:"val1", key2:"val2",...},
+			{key1:"val1", key2:"val2",...},
+			{key1:"val1", key2:"val2",...},
+			...
+			...
+			];
+			*/
+			var output = "var SUBJECT_OBJDATA = [\r\n";
+
+			for(var i=0; i<xmlData.length; i++) {
+				var subject = xmlData[i];
+				var obj = {};
+				output += "{";
+				for(var j=0; j<subject.children.length; j++) {
+					obj[subject.children[j].tagName] = subject.children[j].innerHTML;
+					if(subject.children[j].tagName.search("tm") != 0) {
+						output += subject.children[j].tagName + ":\"" + subject.children[j].innerHTML + "\",";
+					}
+				}
+				output += "tm:["
+				obj.tm = new Array();
+				for(var j=0; j<16; j++) {
+					var str = obj["tm"+(j+1)];
+					delete obj["tm"+(j+1)];
+					if(str.length<5) continue;
+					var tm = 0;
+					tm += DAY_TIME[str.charAt(0)];
+					tm += 2*(parseInt(str.substr(2,2)-1));
+					tm += AB_TIME[str.charAt(4)];
+					obj.tm[j] = tm;
+					output += tm + ",";
+				}
+				output += "]";
+				output += "},\r\n";
+			}
+			output += "];";
+
+			return output;
+
+		}
+
+	</script>
+</head>
+<body onload="doOnLoad()">
+	<input type = "file" id="fileInput"/>
+</body>
+</html>
