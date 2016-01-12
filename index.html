@@ -1,3 +1,5 @@
+<!-- licence : https://github.com/zetagate/ots -->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,7 +14,7 @@
 		checkBrowser();
 
 		const WIDTH = 80;
-		const WIDTH_AX = 40; //axis
+		const WIDTH_AX = 80; //axis
 		const HEIGHT = 30;
 		const HEIGHT_AX = 40; //axis
 		const MGN = 2;
@@ -29,7 +31,7 @@
 		var DAY_TIME = {"월":0, "화":100, "수":200, "목":300, "금":400, "토":500};
 		var AB_TIME = {"A":0, "B":1};
 
-		var COLOR_SET = ["#9AB3FF","#7AE8BD","#E3FF93","#E8C17A","#FF8882"];
+		var COLOR_SET = ["#42baff","#00dc6d","#f1be5b","#ffa6e9","#ffab6e","#fffd66","#e191ff","#a4a4a4","#85e4ff","#ff7f32"];
 
 		var db = SUBJECT_OBJDATA;
 		//var oParser = new DOMParser();
@@ -191,7 +193,7 @@
 
 		function onHelpClick()
 		{
-			window.alert("- 검색창에서 과목코드, 과목명, 교수님성함을 검색할 수 있습니다.\n- 크롬, 파이어폭스 등의 브라우저를 권장합니다.");
+			window.alert("- 검색창에서 과목코드, 과목명, 교수님성함을 검색할 수 있습니다.\n- 크롬, 파이어폭스 등의 브라우저를 권장합니다.\n\n오픈소스 라이센스 안내 : 페이지 하단 참조");
 		}
 
 		function onDepSelect(e)
@@ -272,6 +274,7 @@
 
 			grid1.attachEvent("onRowSelect", onRowSelect);
 			grid1.attachEvent("onRowDblClicked", onRowDblClicked);
+			grid2.attachEvent("onRowDblClicked", onCartDblClicked);
 
 			$("#filter").on("input", onFilterInput);
 			$("#filter").change(onFilterChange);
@@ -342,6 +345,19 @@
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
 
+		function onCartDblClicked(id, ind)
+		{
+			var idx = grid2.getSelectedId()-1;
+			for(var i=0; i<cartList.length; i++) {
+				if(cartList[i] == idx) {
+					cartList.splice(i,1);
+				}
+			}
+			grid2.deleteSelectedRows();
+			redraw();
+		}
+
+
 		function cartTo(idx)
 		{
 			if(idx<0 || idx>=db.length) {
@@ -403,7 +419,7 @@
 			for(var i=0; i<text.length; i++) {
 				var tempLine = line + text[i];
 				var tempWidth = ctx.measureText(tempLine).width;
-				if (tempWidth < fieldWidth) {
+				if (tempWidth < fieldWidth && text[i] != "\n") {
 					line = tempLine;
 				}
 				else {
@@ -418,6 +434,7 @@
 		function drawFrame()
 		{
 			var timeName = ["01A","01B","02A","02B","03A","03B","04A","04B","05A","05B","06A","06B","07A","07B","08A","08B","09A","09B"];
+			var clockName = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"];
 			var weekName = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 			var xs;
 			var ys;
@@ -434,11 +451,15 @@
 			for(var i=0; i<18; i++) {
 				xs = MGN;
 				ys = MGN+i*HEIGHT+HEIGHT_AX;
-				ctx.rect(xs, ys, WIDTH_AX, HEIGHT);
+				var divWidth = 38;
+				ctx.rect(xs, ys, divWidth, HEIGHT);
+				ctx.rect(xs+divWidth, ys, WIDTH_AX-divWidth, HEIGHT);
 				ctx.fillText(timeName[i],xs+8,ys+18);
+				ctx.fillText(clockName[i],xs+4+WIDTH_AX/2,ys+18);
 			}
 			ctx.rect(xs, ys+HEIGHT, WIDTH_AX, HEIGHT*2);
 			ctx.fillText("이후",xs+7,ys+HEIGHT+30);
+
 
 			ctx.lineWidth=0.7;
 			for(var j=0; j<weekName.length; j++) {
@@ -458,7 +479,6 @@
 			//ctx.fillRect(130, 222, WIDTH, HEIGHT);
 
 			ctx.stroke();
-
 		}
 
 		function drawSelection(times, lineWidth)
@@ -516,13 +536,13 @@
 						height = HEIGHT*2;
 						//ctx.rect(xs, ys, WIDTH, HEIGHT*2);
 					}
-					ctx.fillStyle=COLOR_SET[i%5];
+					ctx.fillStyle=COLOR_SET[i%COLOR_SET.length];
 					ctx.fillRect(xs, ys, WIDTH, HEIGHT*times[j][1]);
 					ctx.fillStyle="#000000";
 					ctx.strokeStyle="#000000";
 					ctx.lineWidth=2;
 					ctx.strokeRect(xs, ys, WIDTH, HEIGHT*times[j][1]);
-					var text = sbj.ttk + " " + sbj.cls + " " + sbj.prf;
+					var text = sbj.ttk + "\n" + sbj.cls + " " + sbj.prf;
 					drawTextBox(text,xs+2,ys+20,WIDTH-4);
 				}
 				//drawTextBox("aa",20,20,WIDTH);
@@ -573,7 +593,7 @@
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
 	<img src="hanwarning.png">
-	<div style="font-size:0.9em"> page ver : 0.1.0, <b>DB ver : 2016.01.12</b></div>
+	<div style="font-size:0.9em"><b>DB ver : 2016.01.12</b>  문의:admin@zetagate.com</div>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=10 placeholder="검색...">
@@ -617,10 +637,11 @@
 	<br>
 	<br>
 
-	<canvas id="canvas1" width=524, height=645 style="float:left;border:1px solid #000000"></canvas>
+	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>Copyright (c) 2016 Zetagate
+		<br>ver 0.1.5
+		<br>Copyright (c) 2016 <a href="http://zetagate.com">Zetagate</a>
 		<br>Hosted by <a href="http://github.com">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com">DHTMLX (GPL)</a>, <a href="http://jquery.com/">jQuery</a>
 		<br><a href="https://github.com/zetagate/ots">More informaton about open source license...</a>
