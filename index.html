@@ -1,4 +1,3 @@
-<!-- ver 0.1.4 -->
 <!-- licence : https://github.com/zetagate/ots -->
 
 <!DOCTYPE html>
@@ -15,7 +14,7 @@
 		checkBrowser();
 
 		const WIDTH = 80;
-		const WIDTH_AX = 40; //axis
+		const WIDTH_AX = 80; //axis
 		const HEIGHT = 30;
 		const HEIGHT_AX = 40; //axis
 		const MGN = 2;
@@ -435,6 +434,7 @@
 		function drawFrame()
 		{
 			var timeName = ["01A","01B","02A","02B","03A","03B","04A","04B","05A","05B","06A","06B","07A","07B","08A","08B","09A","09B"];
+			var clockName = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","17:30"];
 			var weekName = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
 			var xs;
 			var ys;
@@ -451,11 +451,15 @@
 			for(var i=0; i<18; i++) {
 				xs = MGN;
 				ys = MGN+i*HEIGHT+HEIGHT_AX;
-				ctx.rect(xs, ys, WIDTH_AX, HEIGHT);
+				var divWidth = 38;
+				ctx.rect(xs, ys, divWidth, HEIGHT);
+				ctx.rect(xs+divWidth, ys, WIDTH_AX-divWidth, HEIGHT);
 				ctx.fillText(timeName[i],xs+8,ys+18);
+				ctx.fillText(clockName[i],xs+4+WIDTH_AX/2,ys+18);
 			}
 			ctx.rect(xs, ys+HEIGHT, WIDTH_AX, HEIGHT*2);
 			ctx.fillText("이후",xs+7,ys+HEIGHT+30);
+
 
 			ctx.lineWidth=0.7;
 			for(var j=0; j<weekName.length; j++) {
@@ -475,7 +479,6 @@
 			//ctx.fillRect(130, 222, WIDTH, HEIGHT);
 
 			ctx.stroke();
-
 		}
 
 		function drawSelection(times, lineWidth)
@@ -634,9 +637,10 @@
 	<br>
 	<br>
 
-	<canvas id="canvas1" width=524, height=645 style="float:left;border:1px solid #000000"></canvas>
+	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
+		<br>ver 0.1.5
 		<br>Copyright (c) 2016 <a href="http://zetagate.com">Zetagate</a>
 		<br>Hosted by <a href="http://github.com">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com">DHTMLX (GPL)</a>, <a href="http://jquery.com/">jQuery</a>
