@@ -304,14 +304,23 @@
 			drawFrame();
 
 			//read cookie
-			var cookieStr = document.cookie.substr(COOKIE_NAME.length+1);
-			var cookieArr = cookieStr.split(",");
-			if(cookieStr.length>0) {
-				for(var i=0; i<cookieArr.length; i++) {
-					cartTo(parseInt(cookieArr[i]));
+			var cookieArr = document.cookie.split(";");
+			for(var i=0; i<cookieArr.length; i++) {
+				if(cookieArr[i].indexOf(COOKIE_NAME) != -1) {
+					//cookieArr can has 2 cases.
+					//["target=value", " not=value"] //not include space
+					//["not=value", " target=value"] //incpude space
+					var cookieStr = cookieArr[i].substr(cookieArr[i].indexOf(COOKIE_NAME)+COOKIE_NAME.length+1);
+					if(cookieStr.length>0) {
+						var cookieData = cookieStr.split(",");
+						for(var i=0; i<cookieData.length; i++) {
+							cartTo(parseInt(cookieData[i]));
+						}
+						redraw();
+					}
 				}
-				redraw();
 			}
+
 		}
 
 		function onRowSelect(id, ind)
@@ -659,7 +668,7 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.2.1
+		<br>ver 0.2.2
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
