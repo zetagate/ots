@@ -1,0 +1,2 @@
+You can get original source code of dhtmlxGrid v.4.5 Standard edition in
+http://dhtmlx.com/docs/download.shtml
