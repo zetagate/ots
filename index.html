@@ -13,11 +13,13 @@
 	<script type="text/javascript">
 		checkBrowser();
 
-		const WIDTH = 80;
-		const WIDTH_AX = 80; //axis
-		const HEIGHT = 30;
-		const HEIGHT_AX = 40; //axis
-		const MGN = 2;
+		var COOKIE_NAME = "v2016001";
+
+		var WIDTH = 80;
+		var WIDTH_AX = 80; //axis
+		var HEIGHT = 30;
+		var HEIGHT_AX = 40; //axis
+		var MGN = 2;
 
 		/*var reader = new FileReader();
 		reader.onload = function() {
@@ -88,7 +90,7 @@
 		function checkBrowser()
 		{
 			var agent = navigator.userAgent.toLowerCase();
-			if (navigator.userAgent.search("Trident")!=-1 || (agent.search("msie")!=-1)) {
+			if (navigator.userAgent.indexOf("Trident")!=-1 || (agent.indexOf("msie")!=-1)) {
 				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
@@ -123,7 +125,7 @@
 			/*
 			for(var i=0; i<db.length; i++) {
 				for(var j=0; j<args.length; j++) {
-					if(db[i][args[j]].search(keyword) != -1) {
+					if(db[i][args[j]].indexOf(keyword) != -1) {
 						addRow(grid1, i);
 						break;
 					}
@@ -139,7 +141,7 @@
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
 					for(var j=0; j<args.length; j++) {
-						if(db[i][args[j]].search(keyword) != -1) {
+						if(db[i][args[j]].indexOf(keyword) != -1) {
 							addRow(grid1, i);
 							break;
 						}
@@ -210,14 +212,7 @@
 
 		function onOutClick()
 		{
-			var idx = grid2.getSelectedId()-1;
-			for(var i=0; i<cartList.length; i++) {
-				if(cartList[i] == idx) {
-					cartList.splice(i,1);
-				}
-			}
-			grid2.deleteSelectedRows();
-			redraw();
+			unCartTo();
 		}
 
 		function onOutAllClick()
@@ -225,6 +220,7 @@
 			cartList = [];
 			grid2.clearAll();
 			redraw();
+			document.cookie=COOKIE_NAME+"=;";
 		}
 
 		function onInClick()
@@ -301,6 +297,16 @@
 			grid2.setSizes();
 
 			drawFrame();
+
+			//read cookie
+			var cookieStr = document.cookie.substr(COOKIE_NAME.length+1);
+			var cookieArr = cookieStr.split(",");
+			if(cookieStr.length>0) {
+				for(var i=0; i<cookieArr.length; i++) {
+					cartTo(parseInt(cookieArr[i]));
+				}
+				redraw();
+			}
 		}
 
 		function onRowSelect(id, ind)
@@ -347,14 +353,7 @@
 
 		function onCartDblClicked(id, ind)
 		{
-			var idx = grid2.getSelectedId()-1;
-			for(var i=0; i<cartList.length; i++) {
-				if(cartList[i] == idx) {
-					cartList.splice(i,1);
-				}
-			}
-			grid2.deleteSelectedRows();
-			redraw();
+			unCartTo();
 		}
 
 
@@ -375,7 +374,22 @@
 			}
 			addRow(grid2, idx);
 			cartList.push(idx);
+			document.cookie=COOKIE_NAME+"="+cartList.toString();
 		}
+
+		function unCartTo()
+		{
+			var idx = grid2.getSelectedId()-1;
+			for(var i=0; i<cartList.length; i++) {
+				if(cartList[i] == idx) {
+					cartList.splice(i,1);
+				}
+			}
+			grid2.deleteSelectedRows();
+			redraw();
+			document.cookie=COOKIE_NAME+"="+cartList.toString();
+		}
+
 
 		window.onresize = function()
 		{
@@ -593,10 +607,10 @@
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
 	<img src="hanwarning.png">
-	<div style="font-size:0.9em"><b>DB ver : 2016.01.12</b>  문의:admin@zetagate.com</div>
+	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.12</b>  문의:admin@zetagate.com</div>
 
 	<div id="wrapper" style="float:left;width:auto;">
-		<input type="text" id="filter" size=10 placeholder="검색...">
+		<input type="text" id="filter" size=20 placeholder="검색...">
 		<button type="button" id="btnEnter">Enter</button>
 		<input type="checkbox" id="chkImmed">빠른검색
 		<select id="selDep">
@@ -640,7 +654,7 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.1.6
+		<br>ver 0.2.0
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
