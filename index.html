@@ -272,6 +272,7 @@
 
 			grid1.attachEvent("onRowSelect", onRowSelect);
 			grid1.attachEvent("onRowDblClicked", onRowDblClicked);
+			grid2.attachEvent("onRowDblClicked", onCartDblClicked);
 
 			$("#filter").on("input", onFilterInput);
 			$("#filter").change(onFilterChange);
@@ -341,6 +342,19 @@
 		//	var i = id;
 			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
+
+		function onCartDblClicked(id, ind)
+		{
+			var idx = grid2.getSelectedId()-1;
+			for(var i=0; i<cartList.length; i++) {
+				if(cartList[i] == idx) {
+					cartList.splice(i,1);
+				}
+			}
+			grid2.deleteSelectedRows();
+			redraw();
+		}
+
 
 		function cartTo(idx)
 		{
@@ -573,7 +587,7 @@
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
 	<img src="hanwarning.png">
-	<div style="font-size:0.9em"> page ver : 0.1.0, <b>DB ver : 2016.01.12</b></div>
+	<div style="font-size:0.9em"> page ver : 0.1.2, <b>DB ver : 2016.01.12</b></div>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=10 placeholder="검색...">
