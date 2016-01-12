@@ -7,17 +7,24 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
+
+	<style>
+		@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+	</style>
+
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
 	<script src="db2.txt"></script>
 	<script type="text/javascript">
 		checkBrowser();
 
-		const WIDTH = 80;
-		const WIDTH_AX = 80; //axis
-		const HEIGHT = 30;
-		const HEIGHT_AX = 40; //axis
-		const MGN = 2;
+		var COOKIE_NAME = "v2016001";
+
+		var WIDTH = 80;
+		var WIDTH_AX = 80; //axis
+		var HEIGHT = 30;
+		var HEIGHT_AX = 40; //axis
+		var MGN = 2;
 
 		/*var reader = new FileReader();
 		reader.onload = function() {
@@ -88,7 +95,7 @@
 		function checkBrowser()
 		{
 			var agent = navigator.userAgent.toLowerCase();
-			if (navigator.userAgent.search("Trident")!=-1 || (agent.search("msie")!=-1)) {
+			if (navigator.userAgent.indexOf("Trident")!=-1 || (agent.indexOf("msie")!=-1)) {
 				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
@@ -123,7 +130,7 @@
 			/*
 			for(var i=0; i<db.length; i++) {
 				for(var j=0; j<args.length; j++) {
-					if(db[i][args[j]].search(keyword) != -1) {
+					if(db[i][args[j]].indexOf(keyword) != -1) {
 						addRow(grid1, i);
 						break;
 					}
@@ -139,7 +146,7 @@
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
 					for(var j=0; j<args.length; j++) {
-						if(db[i][args[j]].search(keyword) != -1) {
+						if(db[i][args[j]].toUpperCase().indexOf(keyword.toUpperCase()) != -1) {
 							addRow(grid1, i);
 							break;
 						}
@@ -210,14 +217,7 @@
 
 		function onOutClick()
 		{
-			var idx = grid2.getSelectedId()-1;
-			for(var i=0; i<cartList.length; i++) {
-				if(cartList[i] == idx) {
-					cartList.splice(i,1);
-				}
-			}
-			grid2.deleteSelectedRows();
-			redraw();
+			unCartTo();
 		}
 
 		function onOutAllClick()
@@ -225,6 +225,7 @@
 			cartList = [];
 			grid2.clearAll();
 			redraw();
+			document.cookie=COOKIE_NAME+"=;";
 		}
 
 		function onInClick()
@@ -301,6 +302,25 @@
 			grid2.setSizes();
 
 			drawFrame();
+
+			//read cookie
+			var cookieArr = document.cookie.split(";");
+			for(var i=0; i<cookieArr.length; i++) {
+				if(cookieArr[i].indexOf(COOKIE_NAME) != -1) {
+					//cookieArr can has 2 cases.
+					//["target=value", " not=value"] //not include space
+					//["not=value", " target=value"] //incpude space
+					var cookieStr = cookieArr[i].substr(cookieArr[i].indexOf(COOKIE_NAME)+COOKIE_NAME.length+1);
+					if(cookieStr.length>0) {
+						var cookieData = cookieStr.split(",");
+						for(var i=0; i<cookieData.length; i++) {
+							cartTo(parseInt(cookieData[i]));
+						}
+						redraw();
+					}
+				}
+			}
+
 		}
 
 		function onRowSelect(id, ind)
@@ -347,14 +367,7 @@
 
 		function onCartDblClicked(id, ind)
 		{
-			var idx = grid2.getSelectedId()-1;
-			for(var i=0; i<cartList.length; i++) {
-				if(cartList[i] == idx) {
-					cartList.splice(i,1);
-				}
-			}
-			grid2.deleteSelectedRows();
-			redraw();
+			unCartTo();
 		}
 
 
@@ -375,7 +388,22 @@
 			}
 			addRow(grid2, idx);
 			cartList.push(idx);
+			document.cookie=COOKIE_NAME+"="+cartList.toString();
 		}
+
+		function unCartTo()
+		{
+			var idx = grid2.getSelectedId()-1;
+			for(var i=0; i<cartList.length; i++) {
+				if(cartList[i] == idx) {
+					cartList.splice(i,1);
+				}
+			}
+			grid2.deleteSelectedRows();
+			redraw();
+			document.cookie=COOKIE_NAME+"="+cartList.toString();
+		}
+
 
 		window.onresize = function()
 		{
@@ -386,7 +414,7 @@
 		{
 			grid.setImagePath("dhtmlx/skins/web/imgs/dhxgrid_web/");
 			grid.setHeader("코드,과목명,분반,교수,대상,학점,설계,비고,정원,개설학부");
-			grid.setInitWidths("55,130,40,60,70,40,40,40,40,100");
+			grid.setInitWidths("55,150,40,60,70,40,40,40,40,100");
 			grid.setColAlign("left,left,left,left,left,left,left,left,left");
 			grid.setColTypes("txt,txt,txt,txt,txt,txt,txt,txt,txt,txt");
 			grid.setColSorting("str,str,str,str,str,str,str,str,str,str");
@@ -458,7 +486,7 @@
 				ctx.fillText(clockName[i],xs+4+WIDTH_AX/2,ys+18);
 			}
 			ctx.rect(xs, ys+HEIGHT, WIDTH_AX, HEIGHT*2);
-			ctx.fillText("이후",xs+7,ys+HEIGHT+30);
+			ctx.fillText("이후",xs+6,ys+HEIGHT+32);
 
 
 			ctx.lineWidth=0.7;
@@ -513,7 +541,7 @@
 			ctx.lineWidth = 2;
 			ctx.strokeStyle="#000000";
 			ctx.fillStyle="#000000";
-			ctx.font="13px dotum";
+			ctx.font="12px Nanum Gothic";
 
 			var totalCredits = 0;
 
@@ -593,10 +621,10 @@
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
 	<img src="hanwarning.png">
-	<div style="font-size:0.9em"><b>DB ver : 2016.01.12</b>  문의:admin@zetagate.com</div>
+	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.12</b>  문의:admin@zetagate.com</div>
 
 	<div id="wrapper" style="float:left;width:auto;">
-		<input type="text" id="filter" size=10 placeholder="검색...">
+		<input type="text" id="filter" size=20 placeholder="검색...">
 		<button type="button" id="btnEnter">Enter</button>
 		<input type="checkbox" id="chkImmed">빠른검색
 		<select id="selDep">
@@ -640,11 +668,11 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.1.5
-		<br>Copyright (c) 2016 <a href="http://zetagate.com">Zetagate</a>
-		<br>Hosted by <a href="http://github.com">GitHub</a>
-		<br>Powerd by <a href="http://dhtmlx.com">DHTMLX (GPL)</a>, <a href="http://jquery.com/">jQuery</a>
-		<br><a href="https://github.com/zetagate/ots">More informaton about open source license...</a>
+		<br>ver 0.2.2
+		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
+		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
+		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
+		<br><a href="https://github.com/zetagate/ots" target="_blank">More informaton about open source license...</a>
 	</div>
 
 </body>
