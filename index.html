@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>kots</title>
+	<title>한표::한기대 시간표 웹</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
@@ -87,7 +87,7 @@
 		{
 			var agent = navigator.userAgent.toLowerCase();
 			if (navigator.userAgent.search("Trident")!=-1 || (agent.search("msie")!=-1)) {
-				alert("본 사이트는 IE8 이하에서는 동작하지 않으며 IE9, IE10, IE11에서는 시간표 저장기능을 지원하지 않으므로 크롬, 파이어폭스, 엣지 등의 브라우저로 접속해 주시기 바랍니다.");
+				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
 
@@ -189,6 +189,11 @@
 			}
 		}
 
+		function onHelpClick()
+		{
+			window.alert("- 검색창에서 과목코드, 과목명, 교수님성함을 검색할 수 있습니다.\n- 크롬, 파이어폭스 등의 브라우저를 권장합니다.");
+		}
+
 		function onDepSelect(e)
 		{
 			filterList(e.target.value, ["dep"]);
@@ -272,7 +277,8 @@
 			$("#filter").change(onFilterChange);
 			$("#btnEnter").click(onEnterClick);
 			$("#chkImmed").change(toggleImmed);
-			$("#btnEmpty").click(onEmptyClick);
+			//$("#btnEmpty").click(onEmptyClick);
+			$("#btnHelp").click(onHelpClick);
 			$("#selDep").change(onDepSelect);
 			$("#selDvi").change(onDviSelect);
 			$("#btnOut").click(onOutClick);
@@ -564,7 +570,10 @@
 </head>
 <body onload="onLoad()">
 	<!--<input type = "file" id="file"/>-->
-	<h3>2015년 2학기</h3>
+	<img src="hantitle.png" width="280" height="auto">
+	<br>
+	<img src="hanwarning.png">
+	<div style="font-size:0.9em"> page ver : 0.1.0, <b>DB ver : 2016.01.12</b></div>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=10 placeholder="검색...">
@@ -589,7 +598,8 @@
 		  <option value="HRD">HRD</option>
 		  <option value="MSC">MSC</option>
 		</select>
-		<button type="button" id="btnEmpty">※</button>
+		<!--<button type="button" id="btnEmpty">※</button>-->
+		<button type="button" id="btnHelp">정보</button>
 
 		<div id="gridbox" style="width:100%;height:370px;background-color:white;"></div>
 			<button type="button" id="btnOut">▲</button>
@@ -610,9 +620,10 @@
 	<canvas id="canvas1" width=524, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>copyright (c) zetagate 2016
-		<br>Powerd by DHTMLX GPLv2, GitHub, jQuery
-		<br>more informaton about open source license
+		<br>Copyright (c) 2016 Zetagate
+		<br>Hosted by <a href="http://github.com">GitHub</a>
+		<br>Powerd by <a href="http://dhtmlx.com">DHTMLX (GPL)</a>, <a href="http://jquery.com/">jQuery</a>
+		<br><a href="https://github.com/zetagate/ots">More informaton about open source license...</a>
 	</div>
 
 </body>
