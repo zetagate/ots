@@ -7,6 +7,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
+
+	<style>
+		@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+	</style>
+
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
 	<script src="db2.txt"></script>
@@ -141,7 +146,7 @@
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
 					for(var j=0; j<args.length; j++) {
-						if(db[i][args[j]].indexOf(keyword) != -1) {
+						if(db[i][args[j]].toUpperCase().indexOf(keyword.toUpperCase()) != -1) {
 							addRow(grid1, i);
 							break;
 						}
@@ -400,7 +405,7 @@
 		{
 			grid.setImagePath("dhtmlx/skins/web/imgs/dhxgrid_web/");
 			grid.setHeader("코드,과목명,분반,교수,대상,학점,설계,비고,정원,개설학부");
-			grid.setInitWidths("55,130,40,60,70,40,40,40,40,100");
+			grid.setInitWidths("55,150,40,60,70,40,40,40,40,100");
 			grid.setColAlign("left,left,left,left,left,left,left,left,left");
 			grid.setColTypes("txt,txt,txt,txt,txt,txt,txt,txt,txt,txt");
 			grid.setColSorting("str,str,str,str,str,str,str,str,str,str");
@@ -472,7 +477,7 @@
 				ctx.fillText(clockName[i],xs+4+WIDTH_AX/2,ys+18);
 			}
 			ctx.rect(xs, ys+HEIGHT, WIDTH_AX, HEIGHT*2);
-			ctx.fillText("이후",xs+7,ys+HEIGHT+30);
+			ctx.fillText("이후",xs+6,ys+HEIGHT+32);
 
 
 			ctx.lineWidth=0.7;
@@ -527,7 +532,7 @@
 			ctx.lineWidth = 2;
 			ctx.strokeStyle="#000000";
 			ctx.fillStyle="#000000";
-			ctx.font="13px dotum";
+			ctx.font="12px Nanum Gothic";
 
 			var totalCredits = 0;
 
@@ -654,7 +659,7 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.2.0
+		<br>ver 0.2.1
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
