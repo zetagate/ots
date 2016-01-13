@@ -81,6 +81,7 @@
 		var cartList = [];
 
 		var immed = false;
+		var softLoaderInterval;
 
 		/*
 		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
@@ -91,11 +92,17 @@
 		             {p:5, t:"씨언어", w:"mon1, mon2"}];
 								 */
 
-
-		function checkBrowser()
+		function isIE()
 		{
 			var agent = navigator.userAgent.toLowerCase();
 			if (navigator.userAgent.indexOf("Trident")!=-1 || (agent.indexOf("msie")!=-1)) {
+				return true;
+			}
+			return false;
+		}
+		function checkBrowser()
+		{
+			if(isIE()) {
 				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
@@ -126,6 +133,7 @@
 
 		function filterList(keyword, args)
 		{
+
 			grid1.clearAll();
 			/*
 			for(var i=0; i<db.length; i++) {
@@ -138,10 +146,11 @@
 			}*/
 
 			/* need stabilizing*/
+			clearInterval(softLoaderInterval);
 			var k=0;
 			function softLoader() {
 				if(k*100>=db.length) {
-					clearInterval(interval);
+					clearInterval(softLoaderInterval);
 					return;
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
@@ -154,12 +163,14 @@
 				}
 				++k;
 			}
-			var interval = setInterval(softLoader, 2);
+			softLoaderInterval = setInterval(softLoader, 2);
 
 		}
 
 		function onFilterChange()
 		{
+			$("#selDvi")[0].selectedIndex = 0;
+			$("#selDep")[0].selectedIndex = 0;
 			filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
 		}
 
@@ -200,8 +211,11 @@
 
 		function onHelpClick()
 		{
-			openPopup('info.html');
-			//window.alert("- 검색창에서 과목코드, 과목명, 교수님성함을 검색할 수 있습니다.\n- 크롬, 파이어폭스 등의 브라우저를 권장합니다.\n\n오픈소스 라이센스 안내 : 페이지 하단 참조");
+			openPopup("info.html");
+		}
+		function onHistoryClick()
+		{
+			openPopup("history.html");
 		}
 
 		function onDepSelect(e)
@@ -237,6 +251,10 @@
 
 		function onSaveClick()
 		{
+			if(isIE()) {
+				window.alert("인터넷 익스플로러는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스, edge 등의 브라우저를 사용해 주세요.");
+				return;
+			}
 			download("timetable.txt",cartList.toString());
 		}
 
@@ -259,9 +277,10 @@
 			//	addRow(grid1, i);
 			//}
 			var k=0;
+			clearInterval(softLoaderInterval);
 			function softLoader() {
 				if(k*100>=db.length) {
-					clearInterval(interval);
+					clearInterval(softLoaderInterval);
 					return;
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
@@ -269,7 +288,7 @@
 				}
 				++k;
 			}
-			var interval = setInterval(softLoader, 80);
+			softLoaderInterval = setInterval(softLoader, 80);
 
 			grid2 = new dhtmlXGridObject("gridbox2");
 			initGrid(grid2);
@@ -284,6 +303,7 @@
 			$("#chkImmed").change(toggleImmed);
 			//$("#btnEmpty").click(onEmptyClick);
 			$("#btnHelp").click(onHelpClick);
+			$("#btnHistory").click(onHistoryClick);
 			$("#selDep").change(onDepSelect);
 			$("#selDvi").change(onDviSelect);
 			$("#btnOut").click(onOutClick);
@@ -314,8 +334,8 @@
 					var cookieStr = cookieArr[i].substr(cookieArr[i].indexOf(COOKIE_NAME)+COOKIE_NAME.length+1);
 					if(cookieStr.length>0) {
 						var cookieData = cookieStr.split(",");
-						for(var i=0; i<cookieData.length; i++) {
-							cartTo(parseInt(cookieData[i]));
+						for(var j=0; j<cookieData.length; j++) {
+							cartTo(parseInt(cookieData[j]));
 						}
 						redraw();
 					}
@@ -620,23 +640,15 @@
 
 
 	</script>
-	<!--<script>
-	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-	  ga('create', 'UA-72344028-1', 'auto');
-	  ga('send', 'pageview');
-
-	</script>-->
 </head>
 <body onload="onLoad()">
 	<!--<input type = "file" id="file"/>-->
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
 	<img src="hanwarning.png">
-	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.12</b>  문의:admin@zetagate.com</div>
+	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.12</b>&nbsp;&nbsp;&nbsp;카카오톡 @hanpyo</div>
+	<!--<div style="font-size:0.9em;color:red"><b>[안내]빠른검색, 개설학부기능 버그 수정 중입니다.</b></div>-->
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=20 placeholder="검색...">
@@ -663,6 +675,7 @@
 		</select>
 		<!--<button type="button" id="btnEmpty">※</button>-->
 		<button type="button" id="btnHelp">정보</button>
+		<button type="button" id="btnHistory">log</button>
 
 		<div id="gridbox" style="width:100%;height:390px;background-color:white;"></div>
 			<button type="button" id="btnOut">▲</button>
@@ -683,7 +696,7 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.2.4
+		<br>ver 0.2.7
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
