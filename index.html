@@ -81,6 +81,7 @@
 		var cartList = [];
 
 		var immed = false;
+		var softLoaderInterval;
 
 		/*
 		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
@@ -132,6 +133,7 @@
 
 		function filterList(keyword, args)
 		{
+
 			grid1.clearAll();
 			/*
 			for(var i=0; i<db.length; i++) {
@@ -144,10 +146,11 @@
 			}*/
 
 			/* need stabilizing*/
+			clearInterval(softLoaderInterval);
 			var k=0;
 			function softLoader() {
 				if(k*100>=db.length) {
-					clearInterval(interval);
+					clearInterval(softLoaderInterval);
 					return;
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
@@ -160,12 +163,14 @@
 				}
 				++k;
 			}
-			var interval = setInterval(softLoader, 2);
+			softLoaderInterval = setInterval(softLoader, 2);
 
 		}
 
 		function onFilterChange()
 		{
+			$("#selDvi")[0].selectedIndex = 0;
+			$("#selDep")[0].selectedIndex = 0;
 			filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
 		}
 
@@ -206,8 +211,11 @@
 
 		function onHelpClick()
 		{
-			openPopup('info.html');
-			//window.alert("- 검색창에서 과목코드, 과목명, 교수님성함을 검색할 수 있습니다.\n- 크롬, 파이어폭스 등의 브라우저를 권장합니다.\n\n오픈소스 라이센스 안내 : 페이지 하단 참조");
+			openPopup("info.html");
+		}
+		function onHistoryClick()
+		{
+			openPopup("history.html");
 		}
 
 		function onDepSelect(e)
@@ -269,9 +277,10 @@
 			//	addRow(grid1, i);
 			//}
 			var k=0;
+			clearInterval(softLoaderInterval);
 			function softLoader() {
 				if(k*100>=db.length) {
-					clearInterval(interval);
+					clearInterval(softLoaderInterval);
 					return;
 				}
 				for(var i=k*100; i<(k+1)*100 && i<db.length; i++) {
@@ -279,7 +288,7 @@
 				}
 				++k;
 			}
-			var interval = setInterval(softLoader, 80);
+			softLoaderInterval = setInterval(softLoader, 80);
 
 			grid2 = new dhtmlXGridObject("gridbox2");
 			initGrid(grid2);
@@ -294,6 +303,7 @@
 			$("#chkImmed").change(toggleImmed);
 			//$("#btnEmpty").click(onEmptyClick);
 			$("#btnHelp").click(onHelpClick);
+			$("#btnHistory").click(onHistoryClick);
 			$("#selDep").change(onDepSelect);
 			$("#selDvi").change(onDviSelect);
 			$("#btnOut").click(onOutClick);
@@ -646,8 +656,8 @@
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
 	<img src="hanwarning.png">
-	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.12</b></div>
-	<div style="font-size:0.9em;color:red"><b>[안내]빠른검색, 개설학부기능 버그 수정 중입니다.</b></div>
+	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.12</b>&nbsp;&nbsp;&nbsp;카카오톡 @hanpyo</div>
+	<!--<div style="font-size:0.9em;color:red"><b>[안내]빠른검색, 개설학부기능 버그 수정 중입니다.</b></div>-->
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=20 placeholder="검색...">
@@ -674,6 +684,7 @@
 		</select>
 		<!--<button type="button" id="btnEmpty">※</button>-->
 		<button type="button" id="btnHelp">정보</button>
+		<button type="button" id="btnHistory">log</button>
 
 		<div id="gridbox" style="width:100%;height:390px;background-color:white;"></div>
 			<button type="button" id="btnOut">▲</button>
@@ -694,7 +705,7 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.2.6
+		<br>ver 0.2.7
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
