@@ -91,11 +91,17 @@
 		             {p:5, t:"씨언어", w:"mon1, mon2"}];
 								 */
 
-
-		function checkBrowser()
+		function isIE()
 		{
 			var agent = navigator.userAgent.toLowerCase();
 			if (navigator.userAgent.indexOf("Trident")!=-1 || (agent.indexOf("msie")!=-1)) {
+				return true;
+			}
+			return false;
+		}
+		function checkBrowser()
+		{
+			if(isIE()) {
 				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
@@ -237,6 +243,10 @@
 
 		function onSaveClick()
 		{
+			if(isIE()) {
+				window.alert("인터넷 익스플로러는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스, edge 등의 브라우저를 사용해 주세요.");
+				return;
+			}
 			download("timetable.txt",cartList.toString());
 		}
 
@@ -684,7 +694,7 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.2.5
+		<br>ver 0.2.6
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
