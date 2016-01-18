@@ -17,6 +17,7 @@
 	<script src="db3.txt"></script>
 	<script type="text/javascript">
 		checkBrowser();
+		window.alert("일부 과목(졸업설계 등)시간오류 확인중입니다. 정확한 정보는 학교사이트를 참고해주세요.")
 
 		var COOKIE_NAME = "v2016001";
 
@@ -103,7 +104,7 @@
 		function checkBrowser()
 		{
 			if(isIE()) {
-				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
+				window.alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
 
