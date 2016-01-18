@@ -14,7 +14,7 @@
 
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
-	<script src="db4.txt"></script>
+	<script src="db3.txt"></script>
 	<script type="text/javascript">
 		checkBrowser();
 
@@ -103,7 +103,7 @@
 		function checkBrowser()
 		{
 			if(isIE()) {
-				alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
+				window.alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
 			}
 		}
 
@@ -255,7 +255,7 @@
 				window.alert("인터넷 익스플로러는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스, edge 등의 브라우저를 사용해 주세요.");
 				return;
 			}
-			download("timetable.txt", "db4"+cartList.toString());
+			download("timetable.txt",cartList.toString());
 		}
 
 		function onLoadClick()
@@ -613,28 +613,24 @@
 		function loadData(file)
 		{
 			var size = file.size;
-			if(size>96) {
+			if(size>64) {
 				window.alert("파일이 너무 큽니다.");
 				return;
 			}
 			var reader = new FileReader();
 			reader.onload = function(e) {
 				var data = reader.result;
-
-				//savefile version
 				if(data.substr(0,3) == "db4") {
-					cartList = [];
-					grid2.clearAll();
-					data = data.substr(3);
-					var arr = data.split(",");
-					for(var i=0; i<arr.length; i++) {
-						cartTo(parseInt(arr[i]));
-					}
-					redraw();
+					window.alert("신버전 저장파일입니다. 원래 페이지에서 열어주세요.");
+					return;
 				}
-				else {
-					window.alert("구버전 저장파일입니다. 페이지 하단의 링크를 눌러서 확인하세요.");
+				cartList = [];
+				grid2.clearAll();
+				var arr = data.split(",");
+				for(var i=0; i<arr.length; i++) {
+					cartTo(parseInt(arr[i]));
 				}
+				redraw();
 			}
 			reader.onerror = function(evt) {
 				console.log(evt.target.error.code);
@@ -648,24 +644,12 @@
 
 
 	</script>
-	<!--<script>
-	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	  ga('create', 'UA-72344028-1', 'auto');
-	  ga('send', 'pageview');
-
-	</script>-->
 </head>
 <body onload="onLoad()">
 	<!--<input type = "file" id="file"/>-->
-	<img src="hantitle.png" width="280" height="auto">
 	<br>
-	<img src="hanwarning.png">
-	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.15</b>&nbsp;&nbsp;&nbsp;카카오톡 @hanpyo </div>
-	<div style="font-size:0.9em;color:red"><b>[안내]15일 과목데이터 갱신 반영했습니다.</b></div>
+	<div style="font-size:0.9em"><b></b>&nbsp;&nbsp;&nbsp;카카오톡 @hanpyo </div>
+	<div style="font-size:1.5em;color:red"><b>구버전 저장파일 뷰어페이지입니다.</b></div>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=20 placeholder="검색...">
@@ -714,7 +698,6 @@
 
 	<div style="position:static;width:400px">
 		<br>ver 0.2.8
-		<br> <a href="http://hanpyo.com/old.html" target="_blank">구버전 저장파일 보기</a>
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
