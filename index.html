@@ -14,7 +14,7 @@
 
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
-	<script src="db3.txt"></script>
+	<script src="db4.txt"></script>
 	<script type="text/javascript">
 		checkBrowser();
 
@@ -255,7 +255,7 @@
 				window.alert("인터넷 익스플로러는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스, edge 등의 브라우저를 사용해 주세요.");
 				return;
 			}
-			download("timetable.txt",cartList.toString());
+			download("timetable.txt", "db4"+cartList.toString());
 		}
 
 		function onLoadClick()
@@ -613,20 +613,28 @@
 		function loadData(file)
 		{
 			var size = file.size;
-			if(size>64) {
+			if(size>96) {
 				window.alert("파일이 너무 큽니다.");
 				return;
 			}
-			cartList = [];
-			grid2.clearAll();
 			var reader = new FileReader();
 			reader.onload = function(e) {
 				var data = reader.result;
-				var arr = data.split(",");
-				for(var i=0; i<arr.length; i++) {
-					cartTo(parseInt(arr[i]));
+
+				//savefile version
+				if(data.substr(0,3) == "db4") {
+					cartList = [];
+					grid2.clearAll();
+					data = data.substr(3);
+					var arr = data.split(",");
+					for(var i=0; i<arr.length; i++) {
+						cartTo(parseInt(arr[i]));
+					}
+					redraw();
 				}
-				redraw();
+				else {
+					window.alert("구버전 저장파일입니다. 페이지 하단의 '구버전 저장파일' 링크를 눌러서 열 수 있습니다.");
+				}
 			}
 			reader.onerror = function(evt) {
 				console.log(evt.target.error.code);
@@ -640,7 +648,16 @@
 
 
 	</script>
+	<!--<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+	  ga('create', 'UA-72344028-1', 'auto');
+	  ga('send', 'pageview');
+
+	</script>-->
 </head>
 <body onload="onLoad()">
 	<!--<input type = "file" id="file"/>-->
@@ -648,7 +665,7 @@
 	<br>
 	<img src="hanwarning.png">
 	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.15</b>&nbsp;&nbsp;&nbsp;카카오톡 @hanpyo </div>
-	<div style="font-size:0.9em;color:red"><b>[안내]과목데이터 갱신되었습니다. (학사공지 90번글참고)</b></div>
+	<div style="font-size:0.9em;color:red"><b>[공지]15일자 과목데이터 갱신 반영했습니다. (16.01.18 15시)</b></div>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=20 placeholder="검색...">
@@ -696,7 +713,8 @@
 	<canvas id="canvas1" width=564, height=645 style="float:left;border:1px solid #000000"></canvas>
 
 	<div style="position:static;width:400px">
-		<br>ver 0.2.7
+		<br>ver 0.2.8
+		<br> <a href="http://hanpyo.com/old.html" target="_blank">구버전 저장파일 보기</a>
 		<br>Copyright (c) 2016 <a href="http://zetagate.com" target="_blank">Zetagate</a>
 		<br>Hosted by <a href="http://github.com" target="_blank">GitHub</a>
 		<br>Powerd by <a href="http://dhtmlx.com" target="_blank">DHTMLX (GPL)</a>, <a href="http://jquery.com/" target="_blank">jQuery</a>
