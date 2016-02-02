@@ -26,53 +26,11 @@
 		var HEIGHT_AX = 40; //axis
 		var MGN = 2;
 
-		/*var reader = new FileReader();
-		reader.onload = function() {
-			console.log("res = " + reader.result);
-		}
-		reader.onerror = function(evt) {
-			console.log(evt.target.error.code);
-		}
-		reader.readAsText(file, "UTF-8");*/
-
 		var DAY_TIME = {"월":0, "화":100, "수":200, "목":300, "금":400, "토":500};
 		var AB_TIME = {"A":0, "B":1};
-
 		var COLOR_SET = ["#42baff","#00dc6d","#f1be5b","#ffa6e9","#ffab6e","#fffd66","#e191ff","#a4a4a4","#85e4ff","#ff7f32"];
 
 		var db = SUBJECT_OBJDATA;
-		//var oParser = new DOMParser();
-		//var oDOM = oParser.parseFromString(SUBJECT_XMLDATA, "text/xml");
-		//var arrData = oDOM.documentElement.children;
-		/*
-		var xmlDoc = $.parseXML(SUBJECT_XMLDATA);
-		var xmlData = xmlDoc.documentElement.children;
-
-		var db = new Array();
-		for(var i=0; i<xmlData.length; i++) {
-			var subject = xmlData[i];
-			var obj = {};
-			for(var j=0; j<subject.children.length; j++) {
-				obj[subject.children[j].tagName] = subject.children[j].innerHTML;
-			}
-			obj.tm = new Array();
-			for(var j=0; j<16; j++) {
-				var str = obj["tm"+(j+1)];
-				delete obj["tm"+(j+1)];
-				if(str.length<5) continue;
-				var tm = 0;
-				tm += DAY_TIME[str.charAt(0)];
-				tm += 2*(parseInt(str.substr(2,2)-1));
-				tm += AB_TIME[str.charAt(4)];
-				obj.tm[j] = tm;
-
-			}
-			db[i] = obj;
-		}
-		xmlDoc = null;
-		xmlData = null;
-		subject = null;
-		*/
 
 		var canvas;
 		var ctx;
@@ -83,14 +41,6 @@
 		var immed = false;
 		var softLoaderInterval;
 
-		/*
-		var lecs = [{p:0, t:"unknown", w:"mon1, mon2"},
-			     {p:1, t:"자바", w:"mon1, mon2"},
-		             {p:2, t:"자료구조", w:"mon1, mon2"},
-		             {p:3, t:"네트워크", w:"mon1, mon2"},
-		             {p:4, t:"컴파일러", w:"mon1, mon2"},
-		             {p:5, t:"씨언어", w:"mon1, mon2"}];
-								 */
 
 		function isIE()
 		{
@@ -100,6 +50,8 @@
 			}
 			return false;
 		}
+
+
 		function checkBrowser()
 		{
 			if(isIE()) {
@@ -107,6 +59,7 @@
 			}
 		}
 
+		//add row to the dhtmlxgrid
 		function addRow(grid, i)
 		{
 			var note = "";
@@ -116,6 +69,11 @@
 											,db[i].crd, db[i].dsg, note, db[i].cap, db[i].dep]);
 		}
 
+		//시간표 canvas 표시할 때, 30분단위로 나와있는
+		//연속된 시간정보를 하나로 묶기 위해 사용
+		//example
+		//input : [100, 101. 102. 200, 300, 301]
+		//output : [100, 3, 200, 1, 300, 2]
 		function mergeNum(arr)
 		{
 			if(arr.length == 0) return [];
@@ -131,19 +89,12 @@
 			return result;
 		}
 
+
+		//searching method
 		function filterList(keyword, args)
 		{
 
 			grid1.clearAll();
-			/*
-			for(var i=0; i<db.length; i++) {
-				for(var j=0; j<args.length; j++) {
-					if(db[i][args[j]].indexOf(keyword) != -1) {
-						addRow(grid1, i);
-						break;
-					}
-				}
-			}*/
 
 			/* need stabilizing*/
 			clearInterval(softLoaderInterval);
@@ -167,6 +118,7 @@
 
 		}
 
+
 		function onFilterChange()
 		{
 			$("#selDvi")[0].selectedIndex = 0;
@@ -174,6 +126,7 @@
 			filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
 		}
 
+		//immed : 빠른검색 옵션
 		function onFilterInput()
 		{
 			if(immed) onFilterChange();
@@ -184,30 +137,13 @@
 			onFilterChange();
 		}
 
+		//빠른검색 옵션
 		function toggleImmed()
 		{
 			immed = !immed;
 			if(immed) filterList($("#filter")[0].value, ["ttk", "prf", "cod"]);
 		}
-		function onEmptyClick()
-		{
-			var allIds = grid1.getAllRowIds().split(",");
-			grid1.clearAll();
 
-			for(var l=0; l<allIds.length; l++) {
-				var chk = true;
-				for(var i=0; i<cartList.length; i++) {
-					for(var j=0; j<db[cartList[i]].tm.length; j++) {
-						for(var k=0; k<db[allIds[l]-1].tm.length; k++) {
-							if(db[cartList[i]].tm[j] == db[allIds[l]-1].tm[k]) {
-								chk = false;
-							}
-						}
-					}
-				}
-				if(chk)	addRow(grid1, allIds[l]-1);
-			}
-		}
 
 		function onHelpClick()
 		{
@@ -230,6 +166,7 @@
 			$("#selDep")[0].selectedIndex = 0;
 		}
 
+		//uncart subject
 		function onOutClick()
 		{
 			unCartTo();
@@ -243,6 +180,7 @@
 			document.cookie=COOKIE_NAME+"=;";
 		}
 
+		//cart subject
 		function onInClick()
 		{
 			cartTo(grid1.getSelectedId()-1);
@@ -272,10 +210,7 @@
 
 			grid1 = new dhtmlXGridObject("gridbox");
 			initGrid(grid1);
-			//grid1.load("../common/grid.xml");
-			//for(var i=0; i<db.length; i++) {
-			//	addRow(grid1, i);
-			//}
+
 			var k=0;
 			clearInterval(softLoaderInterval);
 			function softLoader() {
@@ -301,7 +236,6 @@
 			$("#filter").change(onFilterChange);
 			$("#btnEnter").click(onEnterClick);
 			$("#chkImmed").change(toggleImmed);
-			//$("#btnEmpty").click(onEmptyClick);
 			$("#btnHelp").click(onHelpClick);
 			$("#btnHistory").click(onHistoryClick);
 			$("#selDep").change(onDepSelect);
@@ -376,14 +310,10 @@
 		}
 
 
-
 		function onRowDblClicked(id, ind)
 		{
-			//console.log(grid1.cells(id,0).getValue());
 			cartTo(id-1);
 			redraw();
-		//	var i = id;
-			//grid2.addRow(lecs[i].p,[lecs[i].t,lecs[i].w]);
 		}
 
 		function onCartDblClicked(id, ind)
@@ -392,6 +322,7 @@
 		}
 
 
+		//cart subject
 		function cartTo(idx)
 		{
 			if(idx<0 || idx>=db.length) {
@@ -523,10 +454,6 @@
 			}
 
 
-
-			//ctx.fillStyle="#9CC99C";
-			//ctx.fillRect(130, 222, WIDTH, HEIGHT);
-
 			ctx.stroke();
 		}
 
@@ -648,7 +575,7 @@
 
 
 	</script>
-	<!--<script>
+	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -657,15 +584,15 @@
 	  ga('create', 'UA-72344028-1', 'auto');
 	  ga('send', 'pageview');
 
-	</script>-->
+	</script>
 </head>
 <body onload="onLoad()">
-	<!--<input type = "file" id="file"/>-->
 	<img src="hantitle.png" width="280" height="auto">
 	<br>
-	<img src="hanwarning.png">
 	<div style="font-size:0.9em"><b>과목데이터 : 2016.01.15</b>&nbsp;&nbsp;&nbsp;카카오톡 @hanpyo </div>
-	<div style="font-size:0.9em;color:red"><b>[공지]15일자 과목데이터 갱신 반영했습니다. (16.01.18 15시)</b></div>
+	<div style="font-family:nanum gothic;font-size:1.4em;color:darkred"><b><br><br>
+		※서비스 종료되었습니다.
+		<br><br><br><br><br></b></div>
 
 	<div id="wrapper" style="float:left;width:auto;">
 		<input type="text" id="filter" size=20 placeholder="검색...">
@@ -690,7 +617,6 @@
 		  <option value="HRD">HRD</option>
 		  <option value="MSC">MSC</option>
 		</select>
-		<!--<button type="button" id="btnEmpty">※</button>-->
 		<button type="button" id="btnHelp">정보</button>
 		<button type="button" id="btnHistory">log</button>
 
