@@ -3,5 +3,4 @@ open timetable scheduler
 
 http://hanpyo.com
 
-GNU GPL v2
-
+GNU GPLv2
