@@ -28,7 +28,7 @@ var softLoaderInterval;
 function isIE()
 {
   var agent = navigator.userAgent.toLowerCase();
-  if (navigator.userAgent.indexOf("Trident")!=-1 || (agent.indexOf("msie")!=-1)) {
+  if (navigator.userAgent.indexOf("Trident")!=-1 || agent.indexOf("msie")!=-1 || navigator.userAgent.indexOf("Edge")!=-1) {
     return true;
   }
   return false;
@@ -38,7 +38,7 @@ function isIE()
 function checkBrowser()
 {
   if(isIE()) {
-    alert("인터넷 익스플로러(IE)안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n\n크롬, 파이어폭스, 엣지 등의 브라우저로 사용해 주세요!");
+    alert("브라우저 안내\nIE6, IE7, IE8 : 미지원\nIE9 : 저장, 로드기능 사용불가\nIE10, IE11 : 저장기능 사용불가\n엣지 브라우저 : 저장기능 사용불가\n\n크롬, 파이어폭스 등의 브라우저로 사용해 주세요!");
   }
 }
 
@@ -173,7 +173,7 @@ function onInClick()
 function onSaveClick()
 {
   if(isIE()) {
-    window.alert("인터넷 익스플로러는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스, edge 등의 브라우저를 사용해 주세요.");
+    window.alert("인터넷 익스플로러와 엣지는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스 등의 브라우저를 사용해 주세요.");
     return;
   }
   download("timetable.txt", "db1"+cartList.toString());
