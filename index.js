@@ -409,13 +409,21 @@ function drawFrame()
   var weekName = ["월요일", "화요일", "수요일", "목요일", "금요일"];
   var xs;
   var ys;
+
+
+
+
+
   ctx.beginPath();
+
+  ctx.fillStyle="#FFFFFF";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.lineWidth = 1;
   ctx.strokeStyle="#000000";
   ctx.fillStyle="#000000";
   ctx.font="13px dotum";
-  ctx.rect(MGN, MGN, ctx.width-MGN*2, ctx.height-MGN*2);
+  ctx.rect(MGN, MGN, canvas.width-MGN*2, canvas.height-MGN*2);
 
 
   ctx.rect(MGN, MGN, WIDTH_AX, HEIGHT_AX);
