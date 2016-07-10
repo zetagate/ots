@@ -6,6 +6,7 @@
 	<title>한표::한기대 시간표 웹</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<link rel="shortcut icon" type="image/png" href="/favicon.png?">
 	<link rel="stylesheet" type="text/css" href="dhtmlx/skins/web/dhtmlxgrid.css"/>
 
 	<style>
@@ -17,8 +18,8 @@
 		if(window.location.search != ("?u="+timestamp))
 			//console.log(window.location.search+"?u=");
      		window.location.replace("http://hanpyo.com/?u="+timestamp)
-		//else
-		//	history.pushState("","한표::한기대 시간표 웹","http://hanpyo.com");
+		else
+			history.pushState("","한표::한기대 시간표 웹","http://hanpyo.com");
 	</script>
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
