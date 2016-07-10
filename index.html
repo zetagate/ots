@@ -12,8 +12,12 @@
 		@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
 	</style>
 	<script type="text/javascript">
-		if(window.location.search == "")
-     		window.location.replace("http://hanpyo.com/?u="+Math.random())
+		var date = new Date();
+		var timeStamp = Math.floor(date.getTime()/60000);
+		if(window.location.search != timeStamp)
+     		window.location.replace("http://hanpyo.com/?u="+timeStamp)
+		//else
+		//	history.pushState("","한표::한기대 시간표 웹","http://hanpyo.com");
 	</script>
 	<script src="dhtmlx/codebase/dhtmlxgrid.js"></script>
 	<script src="jq_1_11_1.js"></script>
