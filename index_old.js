@@ -1,7 +1,7 @@
 
 checkBrowser();
 
-var COOKIE_NAME = "v2016007";
+var COOKIE_NAME = "v2016001";
 
 var WIDTH = 80;
 var WIDTH_AX = 80; //axis
@@ -176,7 +176,7 @@ function onSaveClick()
     window.alert("인터넷 익스플로러와 엣지는 파일 저장기능을 지원하지 않습니다.\n크롬이나 파이어폭스 등의 브라우저를 사용해 주세요.");
     return;
   }
-  download("timetable.txt", "db7"+cartList.toString());
+  download("timetable.txt", "db1"+cartList.toString());
 }
 
 function onLoadClick()
@@ -548,7 +548,7 @@ function loadData(file)
     var data = reader.result;
 
     //savefile version
-    if(data.substr(0,3) == "db7") {
+    if(data.substr(0,3) == "db1") {
       cartList = [];
       grid2.clearAll();
       data = data.substr(3);
@@ -559,7 +559,8 @@ function loadData(file)
       redraw();
     }
     else {
-      window.alert("구버전 저장파일입니다. 페이지 상단의 '예비수강신청 데이터 확인' 링크를 눌러 확인하세요");
+      //window.alert("구버전 저장파일입니다. 페이지 하단의 '구버전 저장파일' 링크를 눌러서 열 수 있습니다.");
+      window.alert("저장파일 버전 오류");
     }
   }
   reader.onerror = function(evt) {
