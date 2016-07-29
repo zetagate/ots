@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>...</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<head>
+<body>
+  <div style="font-size:0.9em;">
+	  디비전
+  </div>
+
+  <script type="text/javascript">
+  var req = new XMLHttpRequest();
+req.open('HEAD', 'http://kut70.koreatech.ac.kr/?a=35', true);
+req.setRequestHeader("Content-Type", "text/html");
+req.onreadystatechange = function (aEvt) {
+    if(req.readyState == 4) {
+console.log(req.responseURL);
+        console.log(req.getResponseHeader("Date"));
+    }
+};
+req.send(null);
+
+
+  </script>
+
+</body>
+</html>
